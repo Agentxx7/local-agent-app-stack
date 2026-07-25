@@ -46,6 +46,9 @@ Usage errors return 64. An executed command returns its own exit code.
 - Dynamic execution and nested shells using `eval`, `sh -c`, `bash -c`, or equivalents.
 - Command-string execution through POSIX/C shells, PowerShell variants, Windows command shells,
   `env`, or BusyBox wrappers.
+- Inline command-string execution through language interpreters, including Python `-c`, Perl/Ruby/
+  Lua/R/Groovy `-e`, Node `-e`/`--eval`, and PHP `-r`. An explicit script-file invocation is not
+  blocked solely because it uses one of these interpreters.
 
 ## Minimum REVIEW categories
 
@@ -65,3 +68,7 @@ The wrapper allows a non-force push only when repository state proves that the c
 allowed; add/commit on `main` is blocked. Promotion is not a REVIEW override: pushing or merging
 to `main` through this agent wrapper is blocked. A future operator promotion path must authenticate
 the operator and verify the accepted work commit independently.
+
+Remote deletion is identified before ordinary push classification. `-d`, `--delete`,
+`--delete=<branch>`, and empty-source refspecs all BLOCK deletion of `main` or the current work
+branch; deletion of another inactive branch remains REVIEW.

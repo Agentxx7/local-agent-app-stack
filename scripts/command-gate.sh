@@ -112,6 +112,32 @@ shell_uses_command_string() {
   return 1
 }
 
+interpreter_uses_command_string() {
+  index=$1
+  interpreter_name=$2
+  shift 2
+  local all=("$@") arg lower
+  for arg in "${all[@]:index+1}"; do
+    lower=${arg,,}
+    case "$interpreter_name" in
+      python|python[0-9]*)
+        [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *c* ]] && return 0
+        ;;
+      perl|ruby|lua|lua[0-9]*|R|Rscript|groovy)
+        [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *e* ]] && return 0
+        ;;
+      node|nodejs)
+        [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *e* ]] && return 0
+        case "$lower" in --eval|--eval=*) return 0 ;; esac
+        ;;
+      php)
+        [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *r* ]] && return 0
+        ;;
+    esac
+  done
+  return 1
+}
+
 classify_rm_at() {
   index=$1
   shift
@@ -141,6 +167,7 @@ classify_git_at() {
   local all=("$@")
   local tail=("${all[@]:index+1}") global_args=()
   local sub= sub_index=-1 arg current_branch normalized target delete_mode=0
+  local delete_targets=()
   local position=0
   while [[ "$position" -lt "${#tail[@]}" ]]; do
     arg=${tail[position]}
@@ -190,10 +217,14 @@ classify_git_at() {
       for arg in "${sub_tail[@]:1}"; do
         case "$arg" in
           --force|--force-with-lease|--force-with-lease=*|-f) set_classification BLOCK git-force-push; return ;;
-          -?*f*) [[ "$arg" != --* ]] && { set_classification BLOCK git-force-push; return; } ;;
+          -[^-]*f*) set_classification BLOCK git-force-push; return ;;
           +*) set_classification BLOCK git-force-push; return ;;
           --all|--mirror|--tags|--follow-tags|--prune) set_classification BLOCK broad-git-push; return ;;
-          --delete) delete_mode=1 ;;
+          -d|--delete) delete_mode=1 ;;
+          --delete=*)
+            delete_mode=1
+            delete_targets+=("${arg#--delete=}")
+            ;;
         esac
       done
       local positional=()
@@ -208,7 +239,7 @@ classify_git_at() {
             skip_next=1
             continue
             ;;
-          --repo=*|--receive-pack=*|--exec=*|-u|--set-upstream|--porcelain|--progress|--dry-run|--atomic|--follow-tags|--tags|--prune|--mirror|--no-verify|--ipv4|--ipv6|--delete)
+          --repo=*|--receive-pack=*|--exec=*|-u|-d|--set-upstream|--porcelain|--progress|--dry-run|--atomic|--follow-tags|--tags|--prune|--mirror|--no-verify|--ipv4|--ipv6|--delete|--delete=*)
             continue
             ;;
           -*) continue ;;
@@ -217,7 +248,8 @@ classify_git_at() {
       done
 
       if [[ "$delete_mode" -eq 1 ]]; then
-        for target in "${positional[@]:1}"; do
+        [[ "${#positional[@]}" -gt 1 ]] && delete_targets+=("${positional[@]:1}")
+        for target in "${delete_targets[@]}"; do
           normalized=${target#refs/heads/}
           if [[ "$normalized" == main || "$normalized" == "$current_branch" ]]; then
             set_classification BLOCK protected-branch-delete
@@ -335,6 +367,12 @@ classify() {
       sh|bash|dash|zsh|ksh|fish|ash|csh|tcsh|pwsh|powershell|powershell.exe|cmd|cmd.exe)
         if shell_uses_command_string "$index" "$base" "${argv[@]}"; then
           set_classification BLOCK nested-shell
+          return
+        fi
+        ;;
+      python|python[0-9]*|perl|ruby|node|nodejs|php|lua|lua[0-9]*|R|Rscript|groovy)
+        if interpreter_uses_command_string "$index" "$base" "${argv[@]}"; then
+          set_classification BLOCK interpreter-command-string
           return
         fi
         ;;

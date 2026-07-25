@@ -108,7 +108,16 @@ expect_code_in block-delete-current-branch 30 "$git_fixture" bash "$gate" --chec
 expect_code_in review-delete-inactive-branch 20 "$git_fixture" bash "$gate" --check-only -- git branch -D inactive
 expect_code_in block-remote-delete-current 30 "$git_fixture" bash "$gate" --check-only -- git push origin --delete work/TEST-CARD
 expect_code_in block-remote-delete-main 30 "$git_fixture" bash "$gate" --check-only -- git push origin --delete main
+expect_code_in block-short-delete-current 30 "$git_fixture" bash "$gate" --check-only -- git push -d origin work/TEST-CARD
+expect_code_in block-short-delete-current-after-remote 30 "$git_fixture" bash "$gate" --check-only -- git push origin -d work/TEST-CARD
+expect_code_in block-delete-equals-current 30 "$git_fixture" bash "$gate" --check-only -- git push origin --delete=work/TEST-CARD
+expect_code_in block-short-delete-main 30 "$git_fixture" bash "$gate" --check-only -- git push -d origin main
+expect_code_in block-delete-equals-main 30 "$git_fixture" bash "$gate" --check-only -- git push origin --delete=refs/heads/main
 expect_code_in block-delete-main-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :main
+expect_code_in block-delete-current-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :work/TEST-CARD
+expect_code_in block-delete-current-full-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :refs/heads/work/TEST-CARD
+expect_code_in block-delete-main-full-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :refs/heads/main
+expect_code_in review-delete-inactive-remote 20 "$git_fixture" bash "$gate" --check-only -- git push -d origin inactive
 expect_code block-nested-shell 30 bash "$gate" --check-only -- bash -c 'printf bypass'
 expect_code block-equivalent-shell 30 bash "$gate" --check-only -- sh -c 'printf bypass'
 expect_code block-delayed-shell-option 30 bash "$gate" --check-only -- bash --noprofile -c 'printf bypass'
@@ -123,6 +132,19 @@ expect_code block-cmd-exe-k 30 bash "$gate" --check-only -- /tool/cmd.exe /k 'ec
 expect_code block-env-shell 30 bash "$gate" --check-only -- env ash -c 'printf bypass'
 expect_code block-env-split-string 30 bash "$gate" --check-only -- env -S 'ash -c printf-bypass'
 expect_code block-busybox-shell 30 bash "$gate" --check-only -- busybox ash -c 'printf bypass'
+expect_code block-python-command 30 bash "$gate" --check-only -- python -c 'print(1)'
+expect_code block-python3-command 30 bash "$gate" --check-only -- /usr/bin/python3 -c 'print(1)'
+expect_code block-perl-command 30 bash "$gate" --check-only -- perl -e 'print 1'
+expect_code block-ruby-command 30 bash "$gate" --check-only -- ruby -e 'puts 1'
+expect_code block-node-command 30 bash "$gate" --check-only -- node -e 'console.log(1)'
+expect_code block-node-eval 30 bash "$gate" --check-only -- env nodejs --eval 'console.log(1)'
+expect_code block-php-command 30 bash "$gate" --check-only -- php -r 'echo 1;'
+expect_code block-lua-command 30 bash "$gate" --check-only -- lua5.4 -e 'print(1)'
+expect_code block-r-command 30 bash "$gate" --check-only -- R -e 'print(1)'
+expect_code block-rscript-command 30 bash "$gate" --check-only -- Rscript -e 'print(1)'
+expect_code block-groovy-command 30 bash "$gate" --check-only -- groovy -e 'println 1'
+expect_code review-python-script 20 bash "$gate" --check-only -- python script.py
+expect_code review-node-script 20 bash "$gate" --check-only -- node script.js
 expect_code block-format 30 bash "$gate" --check-only -- mkfs /dev/example
 expect_code block-dd-output 30 bash "$gate" --check-only -- dd if=/dev/zero of=/dev/example
 expect_code block-shutdown 30 bash "$gate" --check-only -- shutdown now
@@ -142,6 +164,8 @@ git -C "$git_fixture" switch -q work/TEST-CARD
 
 approval_sentinel="$test_root/approval-block-sentinel"
 expect_code block-despite-approval 30 bash "$gate" --operator-approved TEST-BLOCK-DECISION --reason 'must remain blocked' -- ash -c "touch $approval_sentinel"
+expect_code_in block-delete-despite-approval 30 "$git_fixture" bash "$gate" --operator-approved TEST-DELETE-DECISION --reason 'must remain blocked' -- git push -d origin work/TEST-CARD
+expect_code block-interpreter-despite-approval 30 bash "$gate" --operator-approved TEST-INTERPRETER-DECISION --reason 'must remain blocked' -- perl -e 'exit 0'
 if [[ -e "$approval_sentinel" ]]; then
   printf 'FAIL approval bypassed BLOCK\n'
   failed=$((failed + 1))
@@ -299,6 +323,37 @@ mutation_caught current-branch-delete-protection candidate_code_is_in "$mutant" 
 fresh_mutant
 sed -i 's/|ash//g' "$mutant"
 mutation_caught alternative-shell-protection candidate_code_is "$mutant" 30 --check-only -- ash -c 'printf bypass'
+
+fresh_mutant
+sed -i 's/-d|--delete) delete_mode=1/--delete) delete_mode=1/' "$mutant"
+mutation_caught short-delete-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push -d origin work/TEST-CARD
+
+fresh_mutant
+sed -i 's/-d|--delete) delete_mode=1/-d) delete_mode=1/' "$mutant"
+mutation_caught long-delete-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push origin --delete work/TEST-CARD
+
+fresh_mutant
+sed -i 's/--delete=\*)/--delete-disabled=*)/g' "$mutant"
+mutation_caught delete-equals-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push origin --delete=work/TEST-CARD
+
+fresh_mutant
+sed -i '/if \[\[ "$target" == :\* \]\]; then/i\        [[ "$target" == :* ]] \&\& target="HEAD:${target#:}"' "$mutant"
+mutation_caught delete-refspec-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push origin :work/TEST-CARD
+
+fresh_mutant
+sed -i 's/if \[\[ "$normalized" == main || "$normalized" == "$current_branch" \]\]; then/if [[ "$normalized" == main ]]; then/' "$mutant"
+mutation_caught delete-current-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push -d origin work/TEST-CARD
+
+fresh_mutant
+sed -i 's/if \[\[ "$normalized" == main || "$normalized" == "$current_branch" \]\]; then/if [[ "$normalized" == "$current_branch" ]]; then/' "$mutant"
+mutation_caught delete-main-protection candidate_code_is_in "$mutant" 30 "$git_fixture" --check-only -- git push -d origin main
+
+fresh_mutant
+sed -i 's/set_classification BLOCK interpreter-command-string/set_classification REVIEW interpreter-command-string/' "$mutant"
+mutation_caught interpreter-c-protection candidate_code_is "$mutant" 30 --check-only -- python3 -c 'print(1)'
+mutation_caught interpreter-e-protection candidate_code_is "$mutant" 30 --check-only -- perl -e 'print 1'
+mutation_caught interpreter-r-protection candidate_code_is "$mutant" 30 --check-only -- php -r 'echo 1;'
+mutation_caught interpreter-eval-protection candidate_code_is "$mutant" 30 --check-only -- node --eval 'console.log(1)'
 
 fresh_mutant
 sed -i 's/^  BLOCK)$/  BLOCK-disabled)/' "$mutant"

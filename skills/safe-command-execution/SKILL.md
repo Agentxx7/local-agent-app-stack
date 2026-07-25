@@ -18,7 +18,9 @@ unchanged argv. For BLOCK, do not execute; report the command category and requi
 Never use dynamic execution, nested shell bypass, reconstructed command strings, fabricated
 approval, or direct terminal execution outside the wrapper. A work agent may add, commit, and
 non-force push only its current `work/<card-id>` branch. It must not push or merge to `main`, delete
-`main`, or delete its active work branch through the wrapper.
+`main`, or delete its active work branch through the wrapper. Inline interpreter command strings
+such as Python `-c`, Perl/Ruby `-e`, Node `--eval`, or PHP `-r` are BLOCK; invoking an explicit
+script file is not blocked solely because of its interpreter.
 ## Expected output
 Classification, exit code, execution result if allowed, decision ID for REVIEW, and blocked or
 unresolved commands.
