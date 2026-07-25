@@ -12,5 +12,7 @@
 | Testing link | WRITTEN RULE | Integration and production-path assertions |
 | Rejected material | OPERATOR DECISION | Repository/runtime/state absence checks |
 | Incident follow-up | OPERATOR DECISION | Issue or ledger automation if selected |
+| Branch and promotion | WRITTEN RULE | Host branch protection and merge checks |
+| Test integrity | WRITTEN RULE | Test, coverage, mutation, and production-path checks |
 
 This map reports no automated or runtime enforcement in the skeleton itself.

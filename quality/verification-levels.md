@@ -7,6 +7,9 @@
 - Manual evidence: A person observes a defined outcome and records context.
 - Operational evidence: Runtime, deployment, state, and process behaviour are observed where relevant.
 - Operator acceptance: The operator judges the collected evidence and limitations.
+- Promotion evidence: The accepted commit is merged to `main` and the resulting baseline is
+  verified independently of the work-branch result.
 
 Select levels according to impact, uncertainty, risk, and complexity. No level silently grants the
-next, and this template does not enforce them automatically.
+next. Prefer a failing proof before code where practical and the real affected path afterward;
+this template does not enforce either automatically.

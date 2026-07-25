@@ -14,3 +14,9 @@ additional project files and subdirectories.
 
 Requirements: Bash and `/usr/bin/env` for the script launcher. The structural checks themselves
 use Bash built-ins and do not require `rg`, GNU `find`, or other validation tools.
+
+`bash scripts/verify-operating-model.sh` checks that the required workflow, branch, TDD, evidence,
+guardrail, and skill documents are non-empty and contain a small set of canonical contracts. It
+requires Bash, `/usr/bin/env`, and a `grep` implementation supporting `-F` and `-q`. It verifies
+documentation only: it does not run project tests, inspect their quality, protect branches,
+approve work, merge, push, or update health.

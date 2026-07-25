@@ -4,6 +4,9 @@ Choose the gates relevant to the change and record evidence or `NOT APPLICABLE` 
 These are review prompts, not automated enforcement.
 
 - Scope: Only approved paths and outcomes changed.
+- Branch: Work started from verified `main` on the branch owned by exactly one card.
+- RED or prior proof: Expected behaviour first failed correctly, or an appropriate alternative
+  proof was recorded.
 - Build: Required build targets completed.
 - Tests: Relevant tests completed and failures are disclosed.
 - Production-path evidence: Tests or manual checks reach the path they claim to verify.
@@ -13,6 +16,7 @@ These are review prompts, not automated enforcement.
 - Process cleanup: Created processes have identity, ownership, timeout, and cleanup evidence.
 - Documentation: Behaviour, decisions, and limitations are current.
 - Git status: Commit, push synchronization, and worktree state are reported separately.
+- Promotion: Operator approval precedes merge, and `main` is verified after merge.
 
 Risk and complexity may justify additional verification, but a separate risk or complexity review
 is not mandatory for every card. The operator chooses applicable gates and decides acceptance.
