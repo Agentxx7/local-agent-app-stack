@@ -1,13 +1,10 @@
-# INCIDENT — <ID>
+# Incident: <title>
 
-- Date and impact:
+- Date:
+- Impact:
 - Observed behavior:
 - Evidence:
-- Root cause:
+- Root cause, if established:
 - Recovery:
-- Existing guardrail:
-- Enforcement type:
-- Would it have stopped the incident:
-- Regression test:
-- Remaining gap:
-- Operator decision:
+- Follow-up decisions:
+- Remaining uncertainty:

@@ -1,5 +1,4 @@
-# Optional health checks
+# Health
 
-Health checks are selected according to the current card. They provide evidence; they do not
-approve work or automatically expand scope. Each check states its subject, signals, thresholds,
-evidence source, limitations, and operator-visible result.
+Optional project health-check definitions may live here. The skeleton reports no actual health
+state and selects no monitoring, diagnostics, thresholds, or runtime probes.

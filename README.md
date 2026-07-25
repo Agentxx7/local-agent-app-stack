@@ -1,76 +1,67 @@
 # Local Agent App Stack
 
-A neutral, reusable project skeleton for applications developed with optional AI agents under
-direct operator control. It is a working-method template, not a finished application and not a
-preselected technology stack.
+A reusable, technology-neutral application project skeleton.
 
-The method is **Conversation-driven, operator-controlled, card-based multi-agent development.**
+It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, and project guardrails.
 
-## How work actually proceeds
+The repository contains structure and templates only. It does not select a programming language, framework, database, AI model, runtime, deployment platform, or application architecture.
 
-1. The operator describes a problem, need, or goal to an advisory AI.
-2. The operator and advisor reason freely until the next concrete step is clear.
-3. The advisor writes a short, bounded card that the operator can copy directly.
-4. The operator chooses which agent receives the card.
-5. The selected agent performs the bounded assignment.
-6. The agent returns results, status, and verifiable evidence.
-7. The operator sends the report back to the advisor.
-8. The operator and advisor assess what is proven, what is missing, and what the next card should be.
+## Use as a GitHub template
+
+Mark this repository as a template in GitHub, then choose **Use this template** to create a new
+repository. Clone the new repository, complete `PROJECT.md`, record initial decisions in
+`ARCHITECTURE.md`, and replace or extend placeholders only when the real project requires it.
+
+## Repository overview
 
 ```mermaid
-sequenceDiagram
-    actor Operator as Operatör
-    participant Advisor as Rådgivande AI
-    participant Agent as Vald arbetsagent
-    participant Reviewer as Valfri reviewer / Wise Man
+flowchart TD
+    P[Application Project]
 
-    Operator->>Advisor: Beskriver problem, behov eller mål
-    Advisor-->>Operator: Ställer frågor och föreslår riktning
-    Operator->>Advisor: Resonerar och fattar löpande beslut
-    Advisor-->>Operator: Skapar ett kort som kan kopieras
-    Operator->>Agent: Väljer agent och lämnar kortet
-    Agent->>Agent: Utför det avgränsade uppdraget
-    Agent-->>Operator: Lämnar resultat, status och bevis
+    P --> F[Frontend]
+    P --> B[Backend]
+    P --> S[Shared]
+    P --> M[Modules]
+    P --> C[Configuration]
+    P --> D[Database]
+    P --> T[Tests]
+    P --> DOC[Documentation]
 
-    opt Operatören begär extra granskning
-        Operator->>Reviewer: Skickar rapport, diff eller bevis
-        Reviewer-->>Operator: Lämnar oberoende granskning
-    end
-
-    Operator->>Advisor: Skickar tillbaka agentrapporten
-    Advisor-->>Operator: Bedömer vad som bevisats och vad som saknas
-    Operator->>Advisor: Beslutar om fortsättning
-    Advisor-->>Operator: Skapar nästa kort vid behov
+    P --> A[Agents]
+    P --> SK[Skills]
+    P --> H[Health Checks]
+    P --> CA[Work Cards]
+    P --> G[Guardrails]
+    P --> I[Incidents]
 ```
 
-## Method locks
+## Structure
 
-- The operator owns the process and makes every decision.
-- The advisor reasons with the operator and writes cards; it does not allocate work autonomously.
-- The operator chooses the working agent. Agent selection is never automatic or predetermined.
-- Agents, skills, and health checks are optional resources.
-- Reviewers, Wise Man review, architecture review, risk analysis, and complexity analysis are used only when the operator decides the task requires them.
-- A working agent may report results but may not approve its own work.
-- A card is short, bounded, and directly copyable.
-- The next card is derived from the actual report, never from assumptions.
-- No status `KLAR` is valid without relevant evidence and the operator's decision.
+- `frontend/` — client-facing code and assets after a frontend approach is selected.
+- `backend/` — server-side or application-service code after a backend approach is selected.
+- `shared/` — contracts or utilities intentionally shared across project areas.
+- `modules/` — bounded feature or capability modules.
+- `config/` — safe configuration examples and configuration documentation.
+- `database/` — persistence definitions and ordered migrations after storage is selected.
+- `tests/` — unit, integration, and end-to-end tests.
+- `agents/` — optional project-specific agent definitions.
+- `skills/` — optional reusable skill packages.
+- `health/` — optional health-check definitions.
+- `cards/` — lightweight work-card and status-report templates.
+- `guardrails/` — project-specific policy templates.
+- `incidents/` — incident documentation templates.
+- `templates/` — reusable project, architecture, feature, and module documents.
+- `docs/` — additional project documentation.
+- `scripts/` — project verification and maintenance scripts.
+- `.github/workflows/` — automation selected by the adopting project.
 
-## Repository map
+## Decisions deferred to each project
 
-- `agents/` and `skills/`: optional reusable resources and their templates.
-- `health/`: selectable project and runtime health lenses.
-- `workflow/`: the operator-controlled card loop, handoff, evidence, and status rules.
-- `guardrails/`: canonical policies and their enforcement map.
-- `cards/`: directly copyable task, analysis, review, cleanup, status, and closure forms.
-- `incidents/`: evidence-preserving incident records and guardrail feedback.
-- `templates/`: neutral project, architecture, agent, and health definitions.
-- `frontend/`, `backend/`, `modules/`, `config/`, `database/`: deliberately empty technical slots.
-- `tests/`, `scripts/`, `docs/`: verification, automation, and project documentation slots.
-- `.github/workflows/`: optional repository automation slot.
+The adopting project chooses its programming languages, frontend and backend frameworks,
+application boundaries, data store, migration tooling, configuration system, test tools,
+deployment platform, observability, security controls, and any AI capabilities.
 
-## Start a project
+Agents, skills, and health checks are optional project areas. They may remain unused or be
+removed when they do not fit the application.
 
-1. Complete `PROJECT.md` and `templates/project-context.md`.
-2. Record real architecture decisions; do not infer them from this skeleton.
-3. Select only the agents, skills, health checks, and reviewers needed for the current card.
-4. Run `bash scripts/verify-skeleton.sh` before the initial commit and after structural changes.
+Run `bash scripts/verify-structure.sh` to check this repository's placeholder structure.

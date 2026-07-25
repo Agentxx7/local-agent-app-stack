@@ -1,16 +1,13 @@
-# Project definition
+# Project
 
-This file is intentionally incomplete until a concrete project adopts the skeleton.
+Complete this file after creating a real project from the template.
 
-- Project name:
-- Operator:
-- Problem statement:
-- Users and stakeholders:
-- In scope:
-- Out of scope:
-- Success evidence:
-- Risk posture:
-- Data classification:
-- Runtime and deployment context:
-- Current accepted card:
-- Current operator decision:
+- Name:
+- Purpose:
+- Users:
+- Scope:
+- Non-goals:
+- Success criteria:
+- Constraints:
+- Selected technologies:
+- Open decisions:

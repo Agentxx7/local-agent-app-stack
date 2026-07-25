@@ -1,11 +1,8 @@
-# Agent: <name>
+# Agent name
 
-- Purpose:
-- Suitable cards:
-- Required inputs:
-- Allowed actions:
-- Prohibited actions:
-- Required evidence:
-- Handoff format:
-- Escalation conditions:
-- Operator decisions required:
+- Optional purpose:
+- Intended inputs:
+- Intended outputs:
+- Allowed project scope:
+- Limitations:
+- Required project decisions:
