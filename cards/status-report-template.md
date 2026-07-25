@@ -8,6 +8,10 @@
 - RED or alternative prior proof:
 - GREEN and refactor results:
 - Tests and real-path evidence:
+- REVIEW commands executed and exact scope:
+- Operator decision IDs:
+- Commands blocked by the gate:
+- Command-gate bypass attempted: No / Yes, with evidence
 - Uncertainties and remaining gaps:
 - Checks not run:
 - Known issues:

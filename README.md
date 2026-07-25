@@ -166,3 +166,14 @@ additional project files and subdirectories.
 Run `bash scripts/verify-operating-model.sh` to check that the template's required operating-model
 documents and key contracts are present. This is a documentation contract check; it does not
 configure remote branch protection, run project tests, approve work, or promote branches.
+
+## Command safety
+
+`scripts/command-gate.sh` provides an optional pre-execution boundary for agent-controlled terminal
+commands. It classifies known safe commands as `ALLOW`, risky or ambiguous commands as `REVIEW`,
+and known destructive or bypass commands as `BLOCK`. REVIEW requires an explicit operator decision;
+BLOCK never executes through the wrapper. Decisions are logged locally without full arguments.
+
+The gate is automatic enforcement only for commands routed through it. It is not global terminal
+interception. Adopting projects must connect their agent runner or terminal adapter to the wrapper
+and restrict direct execution paths if they require complete technical enforcement.

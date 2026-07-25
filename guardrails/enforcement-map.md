@@ -14,5 +14,7 @@
 | Incident follow-up | OPERATOR DECISION | Issue or ledger automation if selected |
 | Branch and promotion | WRITTEN RULE | Host branch protection and merge checks |
 | Test integrity | WRITTEN RULE | Test, coverage, mutation, and production-path checks |
+| Command safety | AUTOMATED CHECK when wrapper is used | Exclusive agent-runner or terminal-adapter integration |
 
-This map reports no automated or runtime enforcement in the skeleton itself.
+Other than command classification inside its wrapper, this map reports no automated or runtime
+enforcement in the skeleton itself.

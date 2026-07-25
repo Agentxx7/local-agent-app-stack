@@ -7,3 +7,6 @@ instructions, not authority, approval, routing, or a technology choice.
 For code cards, `test-driven-implementation` guides RED/GREEN/REFACTOR and
 `production-path-verification` connects claims to real affected paths. Use either only when the
 card and project context make it relevant; neither skill is routed automatically.
+
+`safe-command-execution` describes how a selected agent uses the command gate. It does not route
+agents, grant REVIEW approval, or make direct terminal access safe.

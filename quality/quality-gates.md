@@ -17,6 +17,8 @@ them `NOT APPLICABLE` with a reason. These are review prompts, not automated enf
 - Secrets: No credentials, private paths, or operator data entered version control.
 - State: Sources of truth, writers, migration, and cleanup are accounted for.
 - Process cleanup: Created processes have identity, ownership, timeout, and cleanup evidence.
+- Command safety: Agent-controlled commands used the gate; REVIEW decisions and BLOCK/bypass
+  attempts are reported. Record any execution path not technically connected to the wrapper.
 - Documentation: Behaviour, decisions, and limitations are current.
 - Git status: Commit, push synchronization, and worktree state are reported separately.
 - Promotion: Operator approval precedes merge, and `main` is verified after merge.
