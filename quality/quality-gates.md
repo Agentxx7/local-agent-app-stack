@@ -1,7 +1,10 @@
 # Quality gates
 
 Choose the gates relevant to the change and record evidence or `NOT APPLICABLE` with a reason.
-These are review prompts, not automated enforcement.
+For implementation, branch isolation and operator-controlled promotion are mandatory gates and
+must not be marked `NOT APPLICABLE` for code or product changes. Their project-specific
+verification method may vary. Documentation or analysis cards with no implementation may mark
+them `NOT APPLICABLE` with a reason. These are review prompts, not automated enforcement.
 
 - Scope: Only approved paths and outcomes changed.
 - Branch: Work started from verified `main` on the branch owned by exactly one card.
