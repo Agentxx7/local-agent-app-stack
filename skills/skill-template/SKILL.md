@@ -1,16 +1,14 @@
 ---
 name: skill-name
-description: Describe when this optional project skill is relevant.
+purpose: One bounded reusable outcome.
 ---
-
 # Skill name
-
-## Purpose
-
-## Inputs
-
+## Use when
+## Do not use when
+## Required context
 ## Procedure
-
-## Limits
-
+## Constraints
 ## Expected output
+## Evidence requirements
+## Stop conditions
+## Handoff

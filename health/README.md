@@ -1,4 +1,8 @@
 # Health
 
-Optional project health-check definitions may live here. The skeleton reports no actual health
-state and selects no monitoring, diagnostics, thresholds, or runtime probes.
+This directory contains evidence-based templates for recording project health without inventing
+results. Allowed states are `HEALTHY`, `DEGRADED`, `BLOCKED`, `UNKNOWN`, and `NOT CHECKED`.
+`HEALTHY` requires relevant, current evidence. A missing check stays `NOT CHECKED`; an
+inconclusive check stays `UNKNOWN`. The operator reviews the evidence and records the decision.
+
+Each project selects the checks, tools, scope, and verification frequency appropriate to it.

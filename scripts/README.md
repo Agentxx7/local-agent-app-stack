@@ -8,7 +8,8 @@ additional project files and subdirectories.
 
 - `bash scripts/verify-structure.sh --template` verifies the complete published template.
 - `bash scripts/verify-structure.sh --project` verifies the universal adopted-project base while
-  allowing `agents/`, `skills/`, `health/`, `database/`, and `.github/workflows/` to be absent.
+  allowing `agents/`, `database/`, and `.github/workflows/` to be absent. Guardrails, skills,
+  health, quality, cards, and tests remain part of the reusable core.
 - With no argument, the script uses template mode.
 
 Requirements: Bash and `/usr/bin/env` for the script launcher. The structural checks themselves

@@ -2,7 +2,7 @@
 
 A reusable, technology-neutral application project skeleton.
 
-It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, and project guardrails.
+It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, project guardrails, and quality evidence.
 
 The repository contains structure and templates only. It does not select a programming language, framework, database, AI model, runtime, deployment platform, or application architecture.
 
@@ -67,10 +67,11 @@ sequenceDiagram
 - `database/` — persistence definitions and ordered migrations after storage is selected.
 - `tests/` — unit, integration, and end-to-end tests.
 - `agents/` — optional project-specific agent definitions.
-- `skills/` — optional reusable skill packages.
-- `health/` — optional health-check definitions.
+- `skills/` — a reusable work-instruction library for agents selected by the operator.
+- `health/` — evidence-based project-status checks that preserve unknown areas.
 - `cards/` — lightweight work-card and status-report templates.
-- `guardrails/` — project-specific policy templates.
+- `guardrails/` — shared project safety and quality rules.
+- `quality/` — evidence requirements for distinct delivery and verification states.
 - `incidents/` — incident documentation templates.
 - `templates/` — reusable project, architecture, feature, and module documents.
 - `docs/` — additional project documentation.
@@ -83,11 +84,12 @@ The adopting project chooses its programming languages, frontend and backend fra
 application boundaries, data store, migration tooling, configuration system, test tools,
 deployment platform, observability, security controls, and any AI capabilities.
 
-Agents, skills, and health checks are optional project areas. They may remain unused or be
-removed when they do not fit the application.
+Agents are optional. Skills are available rather than automatically routed, health records only
+verified status or unknowns, and quality documents define evidence without granting acceptance.
+The operator selects resources and makes project decisions.
 
 Use `bash scripts/verify-structure.sh --template` to verify the complete published template. In a
 project created from the template, use `bash scripts/verify-structure.sh --project`; that mode
-allows the optional `agents/`, `skills/`, `health/`, `database/`, and `.github/workflows/` areas to
-be removed. Running the script without an argument defaults to template mode. Both modes allow
+allows the optional `agents/`, `database/`, and `.github/workflows/` areas to be removed. Running
+the script without an argument defaults to template mode. Both modes allow
 additional project files and subdirectories.
