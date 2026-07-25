@@ -110,6 +110,21 @@ flowchart TD
     H --> N[Next card from verified main]
 ```
 
+## Protected two-branch workflow
+
+```mermaid
+gitGraph
+    commit id: "Verified main"
+    branch "work/<card-id>"
+    commit id: "RED"
+    commit id: "GREEN"
+    commit id: "REFACTOR"
+    commit id: "VERIFY"
+    checkout main
+    merge "work/<card-id>" id: "Operator-approved promotion"
+    commit id: "Verified main after merge"
+```
+
 ## Structure
 
 - `frontend/` — client-facing code and assets after a frontend approach is selected.
