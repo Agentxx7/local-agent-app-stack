@@ -1,25 +1,40 @@
 #!/usr/bin/env bash
 set -u
 
+usage() {
+  printf 'Usage: scripts/verify-structure.sh [--template|--project]\n'
+}
+
+if [[ "$#" -gt 1 ]]; then
+  printf 'FAIL expected at most one mode argument\n'
+  usage
+  exit 1
+fi
+
+mode=${1:---template}
+case "$mode" in
+  --template|--project) ;;
+  *)
+    printf 'FAIL unknown mode: %s\n' "$mode"
+    usage
+    exit 1
+    ;;
+esac
+
 root=$(cd -- "${BASH_SOURCE[0]%/*}/.." && pwd -P) || exit 1
 cd "$root" || exit 1
 
 required_directories=(
-  ".github/workflows"
-  "agents"
   "backend"
   "cards"
   "config"
-  "database/migrations"
   "docs"
   "frontend"
   "guardrails"
-  "health"
   "incidents"
   "modules/module-template"
   "scripts"
   "shared"
-  "skills/skill-template"
   "templates"
   "tests/unit"
   "tests/integration"
@@ -27,13 +42,10 @@ required_directories=(
 )
 
 required_files=(
-  ".github/workflows/README.md"
   ".gitignore"
   "ARCHITECTURE.md"
   "PROJECT.md"
   "README.md"
-  "agents/README.md"
-  "agents/agent-template.md"
   "backend/.gitkeep"
   "backend/README.md"
   "cards/README.md"
@@ -41,15 +53,11 @@ required_files=(
   "cards/task-card-template.md"
   "config/.gitkeep"
   "config/README.md"
-  "database/README.md"
-  "database/migrations/.gitkeep"
   "docs/README.md"
   "frontend/.gitkeep"
   "frontend/README.md"
   "guardrails/README.md"
   "guardrails/guardrail-template.md"
-  "health/README.md"
-  "health/health-check-template.md"
   "incidents/README.md"
   "incidents/incident-template.md"
   "modules/README.md"
@@ -58,8 +66,6 @@ required_files=(
   "scripts/verify-structure.sh"
   "shared/.gitkeep"
   "shared/README.md"
-  "skills/README.md"
-  "skills/skill-template/SKILL.md"
   "templates/architecture-decision-template.md"
   "templates/feature-template.md"
   "templates/module-template.md"
@@ -70,24 +76,45 @@ required_files=(
   "tests/unit/.gitkeep"
 )
 
+if [[ "$mode" == "--template" ]]; then
+  required_directories+=(
+    ".github/workflows"
+    "agents"
+    "database/migrations"
+    "health"
+    "skills/skill-template"
+  )
+  required_files+=(
+    ".github/workflows/README.md"
+    "agents/README.md"
+    "agents/agent-template.md"
+    "database/README.md"
+    "database/migrations/.gitkeep"
+    "health/README.md"
+    "health/health-check-template.md"
+    "skills/README.md"
+    "skills/skill-template/SKILL.md"
+  )
+fi
+
 failed=0
 for directory in "${required_directories[@]}"; do
   if [[ ! -d "$directory" ]]; then
-    printf 'FAIL missing required directory: %s\n' "$directory"
+    printf 'FAIL missing required directory in %s mode: %s\n' "${mode#--}" "$directory"
     failed=1
   fi
 done
 
 for file in "${required_files[@]}"; do
   if [[ ! -f "$file" ]]; then
-    printf 'FAIL missing required file: %s\n' "$file"
+    printf 'FAIL missing required file in %s mode: %s\n' "${mode#--}" "$file"
     failed=1
   fi
 done
 
 if [[ "$failed" -ne 0 ]]; then
-  printf 'FAIL required skeleton structure\n'
+  printf 'FAIL required %s structure\n' "${mode#--}"
   exit 1
 fi
 
-printf 'PASS required skeleton structure\n'
+printf 'PASS required %s structure\n' "${mode#--}"

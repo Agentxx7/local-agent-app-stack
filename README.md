@@ -86,4 +86,8 @@ deployment platform, observability, security controls, and any AI capabilities.
 Agents, skills, and health checks are optional project areas. They may remain unused or be
 removed when they do not fit the application.
 
-Run `bash scripts/verify-structure.sh` to check this repository's placeholder structure.
+Use `bash scripts/verify-structure.sh --template` to verify the complete published template. In a
+project created from the template, use `bash scripts/verify-structure.sh --project`; that mode
+allows the optional `agents/`, `skills/`, `health/`, `database/`, and `.github/workflows/` areas to
+be removed. Running the script without an argument defaults to template mode. Both modes allow
+additional project files and subdirectories.
