@@ -1,13 +1,15 @@
+# Project-specific ignore rules must be added after the project technology is selected.
+
 .env
 .env.*
-!.env.example
-.cache/
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
+.local/
 .local-state/
-build/
+secrets/
 coverage/
 dist/
-node_modules/
-target/
-*.db
-*.log
-*.sqlite
+build/
