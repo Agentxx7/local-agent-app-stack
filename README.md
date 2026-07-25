@@ -35,6 +35,26 @@ flowchart TD
     P --> I[Incidents]
 ```
 
+## How the operator works
+
+```mermaid
+sequenceDiagram
+    actor Operator
+    participant ChatGPT as ChatGPT / Advisor
+    participant Agent as Selected Agent<br/>Claude, Codex, Kimi or other
+
+    loop One bounded card at a time
+        Operator->>ChatGPT: Describes a problem, goal or agent report
+        Operator<->>ChatGPT: Discusses what has happened and what should happen next
+        ChatGPT-->>Operator: Produces a short copy-paste work card
+        Operator->>Agent: Selects an agent and sends the card
+        Agent->>Agent: Performs the bounded assignment
+        Agent-->>Operator: Returns result, status, changes and evidence
+        Operator->>ChatGPT: Sends the agent report back
+        ChatGPT-->>Operator: Separates what is proven from what is still missing
+    end
+```
+
 ## Structure
 
 - `frontend/` — client-facing code and assets after a frontend approach is selected.
