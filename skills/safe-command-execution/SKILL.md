@@ -16,7 +16,9 @@ REVIEW, stop until the operator supplies a decision ID, reason, and exact scope,
 unchanged argv. For BLOCK, do not execute; report the command category and required outcome.
 ## Constraints
 Never use dynamic execution, nested shell bypass, reconstructed command strings, fabricated
-approval, or direct terminal execution outside the wrapper.
+approval, or direct terminal execution outside the wrapper. A work agent may add, commit, and
+non-force push only its current `work/<card-id>` branch. It must not push or merge to `main`, delete
+`main`, or delete its active work branch through the wrapper.
 ## Expected output
 Classification, exit code, execution result if allowed, decision ID for REVIEW, and blocked or
 unresolved commands.
@@ -28,4 +30,5 @@ Stop on BLOCK, missing REVIEW approval, ambiguous scope, wrapper failure, suspec
 classification that conflicts with known effects.
 ## Handoff
 Report executed REVIEW commands, decision IDs, BLOCK results, bypass attempts, and remaining gaps
-to the operator. Classification is not operator acceptance.
+to the operator, then stop after the current work branch is pushed. Classification is not operator
+acceptance or promotion authority. Main promotion requires a separate authenticated operator path.

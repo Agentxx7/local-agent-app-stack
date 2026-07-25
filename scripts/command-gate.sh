@@ -84,14 +84,30 @@ contains_arg() {
   return 1
 }
 
-shell_has_command_option() {
+shell_uses_command_string() {
   index=$1
-  shift
-  local all=("$@") arg
+  shell_name=${2,,}
+  shift 2
+  local all=("$@") arg lower
   for arg in "${all[@]:index+1}"; do
-    if [[ "$arg" == -c || ( "$arg" == -?* && "$arg" != --* && "${arg#-}" == *c* ) ]]; then
-      return 0
-    fi
+    lower=${arg,,}
+    case "$shell_name" in
+      sh|bash|dash|zsh|ksh|fish|ash|csh|tcsh)
+        if [[ "$arg" == -c || ( "$arg" == -?* && "$arg" != --* && "${arg#-}" == *c* ) ]]; then
+          return 0
+        fi
+        ;;
+      pwsh|powershell|powershell.exe)
+        case "$lower" in
+          -command|-encodedcommand) return 0 ;;
+        esac
+        ;;
+      cmd|cmd.exe)
+        case "$lower" in
+          /c|/k) return 0 ;;
+        esac
+        ;;
+    esac
   done
   return 1
 }
@@ -123,9 +139,32 @@ classify_git_at() {
   index=$1
   shift
   local all=("$@")
-  local tail=("${all[@]:index+1}")
-  local sub=${tail[0]:-}
-  local arg
+  local tail=("${all[@]:index+1}") global_args=()
+  local sub= sub_index=-1 arg current_branch normalized target delete_mode=0
+  local position=0
+  while [[ "$position" -lt "${#tail[@]}" ]]; do
+    arg=${tail[position]}
+    case "$arg" in
+      -C|-c|--git-dir|--work-tree|--namespace|--config-env)
+        global_args+=("$arg")
+        position=$((position + 1))
+        [[ "$position" -lt "${#tail[@]}" ]] && global_args+=("${tail[position]}")
+        ;;
+      --git-dir=*|--work-tree=*|--namespace=*|--config-env=*|--no-pager|--paginate)
+        global_args+=("$arg")
+        ;;
+      -*) ;;
+      *)
+        sub=$arg
+        sub_index=$position
+        break
+        ;;
+    esac
+    position=$((position + 1))
+  done
+  current_branch=$(git "${global_args[@]}" symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+  local sub_tail=()
+  [[ "$sub_index" -ge 0 ]] && sub_tail=("${tail[@]:sub_index}")
   case "$sub" in
     reset)
       contains_arg --hard "${tail[@]}" && set_classification BLOCK git-reset-hard || set_classification REVIEW git-reset
@@ -148,20 +187,119 @@ classify_git_at() {
       contains_arg . "${tail[@]}" && set_classification BLOCK git-broad-restore || set_classification REVIEW git-restore
       ;;
     push)
-      for arg in "${tail[@]}"; do
+      for arg in "${sub_tail[@]:1}"; do
         case "$arg" in
           --force|--force-with-lease|--force-with-lease=*|-f) set_classification BLOCK git-force-push; return ;;
-          --delete) set_classification REVIEW branch-delete; return ;;
+          -?*f*) [[ "$arg" != --* ]] && { set_classification BLOCK git-force-push; return; } ;;
+          +*) set_classification BLOCK git-force-push; return ;;
+          --all|--mirror|--tags|--follow-tags|--prune) set_classification BLOCK broad-git-push; return ;;
+          --delete) delete_mode=1 ;;
         esac
       done
-      set_classification REVIEW git-push
+      local positional=()
+      local skip_next=0
+      for arg in "${sub_tail[@]:1}"; do
+        if [[ "$skip_next" -eq 1 ]]; then
+          skip_next=0
+          continue
+        fi
+        case "$arg" in
+          --repo|--receive-pack|--exec)
+            skip_next=1
+            continue
+            ;;
+          --repo=*|--receive-pack=*|--exec=*|-u|--set-upstream|--porcelain|--progress|--dry-run|--atomic|--follow-tags|--tags|--prune|--mirror|--no-verify|--ipv4|--ipv6|--delete)
+            continue
+            ;;
+          -*) continue ;;
+          *) positional+=("$arg") ;;
+        esac
+      done
+
+      if [[ "$delete_mode" -eq 1 ]]; then
+        for target in "${positional[@]:1}"; do
+          normalized=${target#refs/heads/}
+          if [[ "$normalized" == main || "$normalized" == "$current_branch" ]]; then
+            set_classification BLOCK protected-branch-delete
+            return
+          fi
+        done
+        set_classification REVIEW branch-delete
+        return
+      fi
+
+      local refspecs=()
+      [[ "${#positional[@]}" -gt 1 ]] && refspecs=("${positional[@]:1}")
+      for target in "${refspecs[@]}"; do
+        if [[ "$target" == :* ]]; then
+          normalized=${target#:}
+          normalized=${normalized#refs/heads/}
+          if [[ "$normalized" == main || "$normalized" == "$current_branch" ]]; then
+            set_classification BLOCK protected-branch-delete
+          else
+            set_classification REVIEW branch-delete
+          fi
+          return
+        fi
+        if [[ "$target" == *:* ]]; then
+          local source_ref=${target%%:*}
+          normalized=${target##*:}
+        else
+          local source_ref=$target
+          normalized=$target
+        fi
+        normalized=${normalized#refs/heads/}
+        [[ "$normalized" == main ]] && { set_classification BLOCK push-to-main; return; }
+        if [[ "$current_branch" != work/* || "$normalized" != "$current_branch" ]]; then
+          set_classification BLOCK push-to-other-branch
+          return
+        fi
+        source_ref=${source_ref#refs/heads/}
+        if [[ "$source_ref" != HEAD && "$source_ref" != "$current_branch" ]]; then
+          set_classification BLOCK push-from-other-source
+          return
+        fi
+      done
+
+      if [[ "$current_branch" == main ]]; then
+        set_classification BLOCK push-from-main
+      elif [[ "$current_branch" != work/* ]]; then
+        set_classification BLOCK push-outside-work-branch
+      elif [[ "${#refspecs[@]}" -gt 0 ]]; then
+        set_classification ALLOW push-current-work-branch
+      else
+        local upstream
+        upstream=$(git "${global_args[@]}" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)
+        if [[ "$upstream" == */"$current_branch" ]]; then
+          set_classification ALLOW push-current-work-branch
+        else
+          set_classification REVIEW push-upstream-unverified
+        fi
+      fi
       ;;
     branch)
-      if contains_arg -d "${tail[@]}" || contains_arg -D "${tail[@]}" || contains_arg --delete "${tail[@]}"; then
+      if contains_arg -d "${sub_tail[@]}" || contains_arg -D "${sub_tail[@]}" || contains_arg --delete "${sub_tail[@]}"; then
+        for target in "${sub_tail[@]:1}"; do
+          [[ "$target" == -* ]] && continue
+          normalized=${target#refs/heads/}
+          if [[ "$normalized" == main || "$normalized" == "$current_branch" ]]; then
+            set_classification BLOCK protected-branch-delete
+            return
+          fi
+        done
         set_classification REVIEW branch-delete
       else
         set_classification REVIEW git-branch-change
       fi
+      ;;
+    merge)
+      [[ "$current_branch" == main ]] && set_classification BLOCK merge-on-main || set_classification REVIEW work-branch-merge
+      ;;
+    rebase)
+      set_classification REVIEW work-branch-rebase
+      ;;
+    add|commit)
+      [[ "$current_branch" == work/* ]] && set_classification ALLOW work-branch-change || set_classification BLOCK change-outside-work-branch
       ;;
     status|diff|show|log|rev-parse|ls-files|check-ignore) set_classification ALLOW git-read ;;
     *) set_classification REVIEW git-other ;;
@@ -188,8 +326,14 @@ classify() {
         set_classification BLOCK dynamic-execution
         return
         ;;
-      sh|bash|dash|zsh|ksh|fish)
-        if shell_has_command_option "$index" "${argv[@]}"; then
+      env)
+        if [[ "$next" == -S || "$next" == --split-string || "$next" == --split-string=* ]]; then
+          set_classification BLOCK split-command-string
+          return
+        fi
+        ;;
+      sh|bash|dash|zsh|ksh|fish|ash|csh|tcsh|pwsh|powershell|powershell.exe|cmd|cmd.exe)
+        if shell_uses_command_string "$index" "$base" "${argv[@]}"; then
           set_classification BLOCK nested-shell
           return
         fi
