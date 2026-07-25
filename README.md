@@ -2,6 +2,8 @@
 
 A reusable, technology-neutral application project skeleton.
 
+This template is designed for conversation-driven, operator-controlled, card-based development using test-driven development, evidence from the real affected path, and a protected two-branch workflow.
+
 It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, project guardrails, and quality evidence.
 
 The repository contains structure and templates only. It does not select a programming language, framework, database, AI model, runtime, deployment platform, or application architecture.
@@ -37,6 +39,10 @@ flowchart TD
 
 ## How the operator works
 
+The operator chooses the agent; the advisor writes the bounded card; and the selected agent works
+on that card's isolated work branch. The agent reports evidence but does not approve its own work.
+The report returns to the operator, and any next card is based on what the report actually proves.
+
 ```mermaid
 sequenceDiagram
     actor Operator
@@ -55,6 +61,68 @@ sequenceDiagram
         ChatGPT-->>Operator: Separates proven work from missing work
         Operator->>ChatGPT: Decides whether another card is needed
     end
+```
+
+## Test-driven development
+
+- RED: Reproduce the expected behaviour or failure before implementation where practical.
+- GREEN: Make the smallest implementation that makes the proof pass.
+- REFACTOR: Improve structure without changing behaviour.
+- VERIFY: Verify relevant tests and the real affected path.
+- Tests provide evidence; the operator determines acceptance.
+- GUI, audio, 3D, documentation, and architecture use an appropriate verifiable alternative when
+  conventional TDD does not fit.
+
+Every code card begins with a defined failing proof where practical and ends with evidence from
+the real affected path. Tests guide implementation; evidence and the operator determine
+acceptance.
+
+```mermaid
+flowchart LR
+    R[RED<br/>Failing proof] --> G[GREEN<br/>Minimal implementation]
+    G --> F[REFACTOR<br/>Improve structure]
+    F --> V[VERIFY<br/>Tests and real affected path]
+    V --> E[Evidence report]
+    E --> O{Operator decision}
+    O -->|More work| R
+    O -->|Approve| P[Promotion]
+```
+
+## Test-driven card lifecycle
+
+```mermaid
+flowchart TD
+    M[Verified main] --> B[Create work/card-id]
+    B --> P[Define expected behaviour]
+    P --> R[RED: prove the test or check fails correctly]
+    R --> G[GREEN: minimal implementation]
+    G --> F[REFACTOR without behaviour change]
+    F --> V[VERIFY tests and real affected path]
+    V --> E[Agent report with evidence]
+    E --> O{Operator decision}
+
+    O -->|More work| P
+    O -->|Reject| X[Reject or close work branch]
+    O -->|Approve| C[Promote to main]
+
+    C --> VM[Verify main after merge]
+    VM --> H[Update health, lessons and evidence]
+    H --> N[Next card from verified main]
+```
+
+## Protected two-branch workflow
+
+```mermaid
+gitGraph
+    commit id: "Verified main"
+    branch "work/<card-id>"
+    commit id: "RED"
+    commit id: "GREEN"
+    commit id: "REFACTOR"
+    commit id: "VERIFY"
+    checkout main
+    merge "work/<card-id>" id: "Operator-approved promotion"
+    commit id: "Verified main after merge"
 ```
 
 ## Structure
@@ -76,6 +144,7 @@ sequenceDiagram
 - `templates/` — reusable project, architecture, feature, and module documents.
 - `docs/` — additional project documentation.
 - `scripts/` — project verification and maintenance scripts.
+- `workflow/` — operator-controlled card, TDD, evidence, and branch lifecycle guidance.
 - `.github/workflows/` — automation selected by the adopting project.
 
 ## Decisions deferred to each project
@@ -93,3 +162,7 @@ project created from the template, use `bash scripts/verify-structure.sh --proje
 allows the optional `agents/`, `database/`, and `.github/workflows/` areas to be removed. Running
 the script without an argument defaults to template mode. Both modes allow
 additional project files and subdirectories.
+
+Run `bash scripts/verify-operating-model.sh` to check that the template's required operating-model
+documents and key contracts are present. This is a documentation contract check; it does not
+configure remote branch protection, run project tests, approve work, or promote branches.
