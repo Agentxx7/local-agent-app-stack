@@ -119,6 +119,7 @@ interpreter_uses_command_string() {
   local all=("$@") arg lower
   for arg in "${all[@]:index+1}"; do
     lower=${arg,,}
+    [[ "$arg" == -- ]] && return 1
     case "$interpreter_name" in
       python|python[0-9]*)
         [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *c* ]] && return 0
@@ -134,6 +135,7 @@ interpreter_uses_command_string() {
         [[ "$arg" == -?* && "$arg" != --* && "${arg#-}" == *r* ]] && return 0
         ;;
     esac
+    [[ "$arg" != -* ]] && return 1
   done
   return 1
 }
@@ -221,6 +223,9 @@ classify_git_at() {
           +*) set_classification BLOCK git-force-push; return ;;
           --all|--mirror|--tags|--follow-tags|--prune) set_classification BLOCK broad-git-push; return ;;
           -d|--delete) delete_mode=1 ;;
+          -[^-]*)
+            [[ "${#arg}" -gt 2 && "${arg#-}" == *d* ]] && delete_mode=1
+            ;;
           --delete=*)
             delete_mode=1
             delete_targets+=("${arg#--delete=}")

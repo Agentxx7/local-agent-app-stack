@@ -118,6 +118,10 @@ expect_code_in block-delete-current-refspec 30 "$git_fixture" bash "$gate" --che
 expect_code_in block-delete-current-full-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :refs/heads/work/TEST-CARD
 expect_code_in block-delete-main-full-refspec 30 "$git_fixture" bash "$gate" --check-only -- git push origin :refs/heads/main
 expect_code_in review-delete-inactive-remote 20 "$git_fixture" bash "$gate" --check-only -- git push -d origin inactive
+expect_code_in block-cluster-vd-current 30 "$git_fixture" bash "$gate" --check-only -- git push -vd origin work/TEST-CARD
+expect_code_in block-cluster-dv-current 30 "$git_fixture" bash "$gate" --check-only -- git push -dv origin work/TEST-CARD
+expect_code_in block-cluster-vd-main 30 "$git_fixture" bash "$gate" --check-only -- git push -vd origin main
+expect_code_in review-cluster-dv-inactive 20 "$git_fixture" bash "$gate" --check-only -- git push -dv origin inactive
 expect_code block-nested-shell 30 bash "$gate" --check-only -- bash -c 'printf bypass'
 expect_code block-equivalent-shell 30 bash "$gate" --check-only -- sh -c 'printf bypass'
 expect_code block-delayed-shell-option 30 bash "$gate" --check-only -- bash --noprofile -c 'printf bypass'
@@ -145,6 +149,10 @@ expect_code block-rscript-command 30 bash "$gate" --check-only -- Rscript -e 'pr
 expect_code block-groovy-command 30 bash "$gate" --check-only -- groovy -e 'println 1'
 expect_code review-python-script 20 bash "$gate" --check-only -- python script.py
 expect_code review-node-script 20 bash "$gate" --check-only -- node script.js
+expect_code review-python-script-c-argument 20 bash "$gate" --check-only -- python3 script.py -c config.toml
+expect_code review-perl-script-e-argument 20 bash "$gate" --check-only -- perl script.pl -e value
+expect_code review-php-script-r-argument 20 bash "$gate" --check-only -- php script.php -r value
+expect_code review-python-double-dash-script 20 bash "$gate" --check-only -- python3 -- script.py -c config.toml
 expect_code block-format 30 bash "$gate" --check-only -- mkfs /dev/example
 expect_code block-dd-output 30 bash "$gate" --check-only -- dd if=/dev/zero of=/dev/example
 expect_code block-shutdown 30 bash "$gate" --check-only -- shutdown now
