@@ -6,6 +6,7 @@ cd "$root" || exit 1
 
 required_files=(
   "README.md"
+  "cards/status-report-template.md"
   "cards/task-card-template.md"
   "workflow/README.md"
   "workflow/operator-tdd-card-loop.md"
@@ -60,14 +61,22 @@ require_text quality/tdd-and-evidence-policy.md 'Tests guide implementation; evi
 require_text quality/definition-of-done.md 'Promoted to main:'
 require_text quality/quality-gates.md 'branch isolation and operator-controlled promotion are mandatory gates'
 require_text quality/quality-gates.md 'must not be marked `NOT APPLICABLE` for code or product changes.'
+absolute_override='No override may allow direct implementation on main, multiple cards on one work branch, mixed or foreign scope, agent self-approval, promotion without an explicit operator decision, unexplained failing tests, or promotion without evidence from the real affected path.'
+require_text guardrails/branch-and-promotion-policy.md "$absolute_override"
 require_text cards/task-card-template.md 'Failing proof (RED) or justified alternative:'
 require_text cards/task-card-template.md 'Verification, including real affected path:'
 require_text cards/task-card-template.md 'Stop conditions:'
+require_text cards/status-report-template.md 'Operator acceptance: Pending / recorded decision'
+require_text cards/status-report-template.md 'Promotion to main: Not performed / commit'
+require_text cards/status-report-template.md 'Post-promotion main verification:'
 
 contract_files=(README.md workflow/*.md guardrails/*.md quality/*.md cards/*.md skills/*/SKILL.md)
 contract_text=
 for file in "${contract_files[@]}"; do
   while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" == "- Operator override: $absolute_override" ]]; then
+      continue
+    fi
     if [[ -z "$line" ]]; then
       contract_text+=$'\n'
     else
@@ -84,10 +93,20 @@ reject_pattern '(agent|work agent).*(may|can|is allowed to).*(self[- ]approve|ap
   'agent self-approval'
 reject_pattern "agent('?s)? self-approval.*(allowed|permitted)" \
   'agent self-approval'
-reject_pattern '(allow|permit)(s|ted)?.*promotion without (an )?operator (decision|approval)' \
+reject_pattern '(allow|permit)(s|ted)?.*promotion without (an )?(explicit )?operator (decision|approval)' \
   'promotion without an operator decision'
-reject_pattern 'promotion without (an )?operator (decision|approval).*(is[[:space:]]+)?(allowed|permitted)' \
+reject_pattern 'promotion without (an )?(explicit )?operator (decision|approval).*(is[[:space:]]+)?(allowed|permitted)' \
   'promotion without an operator decision'
+reject_pattern '(multiple|more than one) (cards?|work cards?).*(one|same) work branch.*(allowed|permitted)' \
+  'multiple cards on one work branch'
+reject_pattern '(allow|permit)(s|ted)?.*(multiple|more than one) (cards?|work cards?).*(one|same) work branch' \
+  'multiple cards on one work branch'
+reject_pattern '(mixed|foreign|unrelated) scope.*(allowed|permitted)' \
+  'mixed or foreign scope'
+reject_pattern '(allow|permit)(s|ted)?.*(mixed|foreign|unrelated) scope' \
+  'mixed or foreign scope'
+reject_pattern 'reasoned exception' \
+  'a broad reasoned exception'
 
 if [[ "$failed" -ne 0 ]]; then
   printf 'FAIL operating-model documentation contract\n'

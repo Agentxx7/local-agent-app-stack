@@ -9,11 +9,9 @@
 - Required evidence: Base commit, branch name, scoped diff, card-bound commit, operator decision,
   promotion commit, post-merge checks, remote state, and branch disposition where applicable.
 - Enforcement type: WRITTEN RULE.
-- Operator override: There is no ordinary override for direct implementation on `main`, multiple
-  cards on one work branch, foreign scope, promotion without an operator decision, agent
-  self-approval, unexplained red tests, or promotion without real-affected-path verification. The
-  operator may change scope or method through a documented new decision or card; that change is
-  not an override or retrospective bypass. Remote protection and merge authority remain
-  project-specific.
+- Operator override: No override may allow direct implementation on main, multiple cards on one work branch, mixed or foreign scope, agent self-approval, promotion without an explicit operator decision, unexplained failing tests, or promotion without evidence from the real affected path.
+  Method or scope may change only through a new documented operator decision and an updated or new
+  card. That change is not an override of the core rules. Remote protection and merge authority
+  remain project-specific.
 - Remaining limitations: The template does not configure host branch protection, perform merges,
   or close branches automatically.

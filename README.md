@@ -2,9 +2,7 @@
 
 A reusable, technology-neutral application project skeleton.
 
-This template is designed for conversation-driven, operator-controlled, card-based development
-using test-driven development, evidence from the real affected path, and a protected two-branch
-workflow.
+This template is designed for conversation-driven, operator-controlled, card-based development using test-driven development, evidence from the real affected path, and a protected two-branch workflow.
 
 It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, project guardrails, and quality evidence.
 
@@ -63,6 +61,31 @@ sequenceDiagram
         ChatGPT-->>Operator: Separates proven work from missing work
         Operator->>ChatGPT: Decides whether another card is needed
     end
+```
+
+## Test-driven development
+
+- RED: Reproduce the expected behaviour or failure before implementation where practical.
+- GREEN: Make the smallest implementation that makes the proof pass.
+- REFACTOR: Improve structure without changing behaviour.
+- VERIFY: Verify relevant tests and the real affected path.
+- Tests provide evidence; the operator determines acceptance.
+- GUI, audio, 3D, documentation, and architecture use an appropriate verifiable alternative when
+  conventional TDD does not fit.
+
+Every code card begins with a defined failing proof where practical and ends with evidence from
+the real affected path. Tests guide implementation; evidence and the operator determine
+acceptance.
+
+```mermaid
+flowchart LR
+    R[RED<br/>Failing proof] --> G[GREEN<br/>Minimal implementation]
+    G --> F[REFACTOR<br/>Improve structure]
+    F --> V[VERIFY<br/>Tests and real affected path]
+    V --> E[Evidence report]
+    E --> O{Operator decision}
+    O -->|More work| R
+    O -->|Approve| P[Promotion]
 ```
 
 ## Test-driven card lifecycle
