@@ -1,5 +1,9 @@
 # Agent command policy
 
+## Operatorstyrd evidensdriven agentutveckling
+
+VARNING — INGEN VIBE CODING
+
 All agent-controlled terminal commands in this repository must be invoked through
 `scripts/command-gate.sh`. Use check-only when classification is uncertain:
 

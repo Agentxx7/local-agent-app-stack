@@ -1,5 +1,9 @@
 # Local Agent App Stack
 
+## Operatorstyrd evidensdriven agentutveckling
+
+VARNING — INGEN VIBE CODING
+
 A reusable, technology-neutral application project skeleton.
 
 This template is designed for conversation-driven, operator-controlled, card-based development using test-driven development, evidence from the real affected path, and a protected two-branch workflow.
