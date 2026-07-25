@@ -41,17 +41,19 @@ flowchart TD
 sequenceDiagram
     actor Operator
     participant ChatGPT as ChatGPT / Advisor
-    participant Agent as Selected Agent<br/>Claude, Codex, Kimi or other
+    participant Agent as Selected Agent
 
     loop One bounded card at a time
-        Operator->>ChatGPT: Describes a problem, goal or agent report
-        Operator<->>ChatGPT: Discusses what has happened and what should happen next
+        Operator->>ChatGPT: Describes a problem, goal, or agent report
+        ChatGPT-->>Operator: Discusses options and asks relevant questions
+        Operator->>ChatGPT: Clarifies requirements and decides direction
         ChatGPT-->>Operator: Produces a short copy-paste work card
-        Operator->>Agent: Selects an agent and sends the card
+        Operator->>Agent: Selects Claude, Codex, Kimi, or another agent
         Agent->>Agent: Performs the bounded assignment
-        Agent-->>Operator: Returns result, status, changes and evidence
+        Agent-->>Operator: Returns result, status, changes, and evidence
         Operator->>ChatGPT: Sends the agent report back
-        ChatGPT-->>Operator: Separates what is proven from what is still missing
+        ChatGPT-->>Operator: Separates proven work from missing work
+        Operator->>ChatGPT: Decides whether another card is needed
     end
 ```
 
