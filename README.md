@@ -1,8 +1,7 @@
 # Local Agent App Stack
 
 ## Operatorstyrd evidensdriven agentutveckling
-
-VARNING — INGEN VIBE CODING
+WARNING — THIS IS NOT VIBE CODING
 
 A reusable, technology-neutral application project skeleton.
 
