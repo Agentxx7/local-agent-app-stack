@@ -1,3 +1,16 @@
+# START HERE — mandatory agent bootstrap
+
+The agent's first repository command must be:
+
+```text
+bash scripts/agent-start.sh
+```
+
+Do not analyze repository contents, change files, or run project commands until startup passes.
+For an audit that must not mutate repository or product state, use
+`bash scripts/agent-start.sh --read-only`. A missing or stale session receipt blocks subsequent
+agent-controlled execution.
+
 # Agent command policy
 
 ## Operatorstyrd evidensdriven agentutveckling

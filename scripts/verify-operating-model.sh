@@ -6,6 +6,8 @@ cd "$root" || exit 1
 
 required_files=(
   "README.md"
+  "AGENTS.md"
+  "guardrails/registry.toml"
   "cards/status-report-template.md"
   "cards/task-card-template.md"
   "workflow/README.md"
@@ -50,6 +52,8 @@ reject_pattern() {
 }
 
 require_text README.md 'conversation-driven, operator-controlled, card-based development'
+require_text README.md 'README instructions alone are documentation, not enforcement.'
+require_text AGENTS.md "bash scripts/agent-start.sh"
 require_text README.md '## Test-driven card lifecycle'
 require_text README.md 'The agent reports evidence but does not approve its own work.'
 require_text workflow/README.md 'one short-lived branch per active card'

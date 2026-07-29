@@ -428,13 +428,13 @@ classify() {
       ;;
     sh|bash)
       case "${argv[1]:-}" in
-        scripts/verify-structure.sh|scripts/verify-operating-model.sh|scripts/tests/command-gate-test.sh)
+        scripts/verify-structure.sh|scripts/verify-operating-model.sh|scripts/tests/command-gate-test.sh|scripts/verify.sh|scripts/tests/agent-bootstrap-test.sh|scripts/agent-start.sh)
           set_classification ALLOW registered-verification
           return
           ;;
         -n)
           case "${argv[2]:-}" in
-            scripts/command-gate.sh|scripts/verify-structure.sh|scripts/verify-operating-model.sh|scripts/tests/command-gate-test.sh)
+            scripts/command-gate.sh|scripts/verify-structure.sh|scripts/verify-operating-model.sh|scripts/tests/command-gate-test.sh|scripts/agent-start.sh|scripts/verify.sh|scripts/registry-lib.sh|scripts/tests/agent-bootstrap-test.sh)
               set_classification ALLOW shell-syntax-check
               return
               ;;
@@ -476,6 +476,64 @@ classify() {
 }
 
 classify "${command_argv[@]}"
+
+session_exempt=0
+[[ "$(cd -- "${BASH_SOURCE[0]%/*}" && pwd -P)/${BASH_SOURCE[0]##*/}" != "$root/scripts/command-gate.sh" ]] && session_exempt=1
+if [[ "${command_argv[0]##*/}" == bash ]]; then
+  case "${command_argv[1]:-}" in
+    scripts/agent-start.sh|scripts/verify.sh|scripts/tests/agent-bootstrap-test.sh|scripts/tests/command-gate-test.sh|scripts/verify-structure.sh|scripts/verify-operating-model.sh) session_exempt=1 ;;
+    -n)
+      case "${command_argv[2]:-}" in
+        scripts/agent-start.sh|scripts/verify.sh|scripts/registry-lib.sh|scripts/tests/agent-bootstrap-test.sh|scripts/command-gate.sh|scripts/tests/command-gate-test.sh|scripts/verify-structure.sh|scripts/verify-operating-model.sh) session_exempt=1 ;;
+      esac
+      ;;
+  esac
+fi
+
+receipt_value() {
+  local wanted=$1 receipt=$2 line
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    [[ "$line" == "$wanted="* ]] && { printf '%s' "${line#*=}"; return 0; }
+  done < "$receipt"
+  return 1
+}
+
+if [[ "$session_exempt" -eq 0 ]]; then
+  session_file=${COMMAND_GATE_SESSION_FILE:-"$root/.local/agent-session.env"}
+  session_valid=1
+  [[ -f "$session_file" ]] || session_valid=0
+  if [[ "$session_valid" -eq 1 ]]; then
+    session_root=$(receipt_value repository_root "$session_file") || session_valid=0
+    session_id=$(receipt_value session_id "$session_file") || session_valid=0
+    session_branch=$(receipt_value branch "$session_file") || session_valid=0
+    session_baseline=$(receipt_value baseline_commit "$session_file") || session_valid=0
+    session_card=$(receipt_value card_id "$session_file") || session_valid=0
+    session_digest=$(receipt_value registry_digest "$session_file") || session_valid=0
+    session_policy_digest=$(receipt_value policy_registry_digest "$session_file") || session_valid=0
+    session_startup=$(receipt_value startup_time "$session_file") || session_valid=0
+    session_guardrails=$(receipt_value required_guardrails "$session_file") || session_valid=0
+    session_mode=$(receipt_value session_mode "$session_file") || session_valid=0
+    current_branch=$(git -C "$root" branch --show-current 2>/dev/null || true)
+    current_digest=$(sha256sum "$root/guardrails/registry.toml" 2>/dev/null | awk '{print $1}')
+    current_policy_digest=$(sha256sum "$root/AGENTS.md" "$root/guardrails/registry.toml" "$root/scripts/command-gate.sh" 2>/dev/null | awk '{print $1}' | sha256sum | awk '{print $1}')
+    [[ -n "$session_id" && -n "$session_startup" && -n "$session_guardrails" ]] || session_valid=0
+    [[ "$session_root" == "$root" && "$session_branch" == "$current_branch" ]] || session_valid=0
+    [[ "$session_card" == READ_ONLY || "$current_branch" == "work/$session_card" ]] || session_valid=0
+    [[ "$session_digest" == "$current_digest" ]] || session_valid=0
+    [[ "$session_policy_digest" == "$current_policy_digest" ]] || session_valid=0
+    git -C "$root" cat-file -e "$session_baseline^{commit}" 2>/dev/null || session_valid=0
+    git -C "$root" merge-base --is-ancestor "$session_baseline" HEAD 2>/dev/null || session_valid=0
+    [[ "$current_branch" != main || "$session_mode" == read-only ]] || session_valid=0
+  fi
+  if [[ "$session_valid" -ne 1 ]]; then
+    set_classification BLOCK missing-or-stale-agent-session
+  elif [[ "$session_mode" == read-only ]]; then
+    case "$CATEGORY" in
+      git-read|shell-syntax-check|registered-verification|safe-builtin) ;;
+      *) set_classification BLOCK read-only-session-command ;;
+    esac
+  fi
+fi
 
 safe_decision=${decision_id//[^A-Za-z0-9._:-]/_}
 safe_command=${command_argv[0]##*/}

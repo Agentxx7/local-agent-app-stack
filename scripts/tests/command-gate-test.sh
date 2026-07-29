@@ -6,6 +6,25 @@ gate="$root/scripts/command-gate.sh"
 test_root=$(mktemp -d "${TMPDIR:-/tmp}/command-gate-test.XXXXXX") || exit 1
 trap 'find "$test_root" -depth -delete' EXIT
 export COMMAND_GATE_LOG_DIR="$test_root/log"
+export COMMAND_GATE_SESSION_FILE="$test_root/agent-session.env"
+
+registry_digest=$(sha256sum "$root/guardrails/registry.toml" | awk '{print $1}')
+policy_registry_digest=$(sha256sum "$root/AGENTS.md" "$root/guardrails/registry.toml" "$root/scripts/command-gate.sh" | awk '{print $1}' | sha256sum | awk '{print $1}')
+current_branch=$(git -C "$root" branch --show-current)
+baseline_commit=$(git -C "$root" rev-parse HEAD)
+card_id=${current_branch#work/}
+{
+  printf 'session_id=COMMAND_GATE_FIXTURE_SESSION\n'
+  printf 'repository_root=%s\n' "$root"
+  printf 'baseline_commit=%s\n' "$baseline_commit"
+  printf 'branch=%s\n' "$current_branch"
+  printf 'card_id=%s\n' "$card_id"
+  printf 'registry_digest=%s\n' "$registry_digest"
+  printf 'policy_registry_digest=%s\n' "$policy_registry_digest"
+  printf 'startup_time=2026-01-01T00:00:00Z\n'
+  printf 'required_guardrails=template_structure,operating_model\n'
+  printf 'session_mode=write\n'
+} > "$COMMAND_GATE_SESSION_FILE"
 
 passed=0
 failed=0

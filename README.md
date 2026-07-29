@@ -5,6 +5,24 @@ WARNING — THIS IS NOT VIBE CODING
 
 A reusable, technology-neutral application project skeleton.
 
+## START HERE
+
+Human:
+
+1. Complete `PROJECT.md` and `ARCHITECTURE.md` for an adopted project.
+2. Create `work/<card-id>` from verified `main`.
+3. Give the bounded card to the selected agent.
+
+Agent:
+
+1. Read `AGENTS.md`.
+2. Run `bash scripts/agent-start.sh` as the first repository command.
+3. Follow the activated guardrail chain.
+
+README instructions alone are documentation, not enforcement. Startup, the guardrail registry,
+the local session receipt, command-gate integration, and an exclusive runner or terminal adapter
+provide the executable boundary. See `AGENTS.md` for the mandatory entrypoint.
+
 This template is designed for conversation-driven, operator-controlled, card-based development using test-driven development, evidence from the real affected path, and a protected two-branch workflow.
 
 It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, project guardrails, and quality evidence.
@@ -180,3 +198,11 @@ BLOCK never executes through the wrapper. Decisions are logged locally without f
 The gate is automatic enforcement only for commands routed through it. It is not global terminal
 interception. Adopting projects must connect their agent runner or terminal adapter to the wrapper
 and restrict direct execution paths if they require complete technical enforcement.
+
+## Agent bootstrap and guardrail registry
+
+`guardrails/registry.toml` is the technology-neutral machine-readable registry. Required adapters
+run fail-closed through `bash scripts/verify.sh`. Successful startup records branch, card, baseline,
+registry digest, mode, time, and enabled required guardrails in ignored
+`.local/agent-session.env`; it stores no secrets or full commands. Startup does not install
+dependencies or start product processes.

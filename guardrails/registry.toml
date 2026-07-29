@@ -1,0 +1,25 @@
+version = 1
+
+[[guardrail]]
+id = "template_structure"
+description = "Verify the technology-neutral repository structure."
+level = "required"
+adapter = "scripts/verify-structure.sh"
+arguments = "--template"
+scope = "repository"
+fail_closed = true
+evidence_output = "stdout"
+owner = "repository-operator"
+lifecycle = "active"
+
+[[guardrail]]
+id = "operating_model"
+description = "Verify the operator-controlled operating-model contracts."
+level = "required"
+adapter = "scripts/verify-operating-model.sh"
+arguments = ""
+scope = "repository"
+fail_closed = true
+evidence_output = "stdout"
+owner = "repository-operator"
+lifecycle = "active"

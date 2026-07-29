@@ -46,3 +46,15 @@ with their agent runner or terminal adapter. The standalone script requires appr
 does not authenticate the operator or validate a decision ledger; that binding belongs in the
 runner/adapter integration. Shell redirections or pipelines created outside the wrapper are also
 outside its argv classifier and must be restricted by that integration.
+
+## Agent startup and verification
+
+- `bash scripts/agent-start.sh` validates repository, branch/card scope, worktree, registry,
+  required adapters, structure, operating model, and command gate before writing the ignored
+  `.local/agent-session.env` receipt.
+- `bash scripts/agent-start.sh --read-only` creates a read-only audit session; the command gate then
+  blocks writing, process-starting, and Git-mutating classifications.
+- `bash scripts/verify.sh` parses `guardrails/registry.toml` and runs every required adapter,
+  reporting `PASS`, `FAIL`, `NEEDS_OPERATOR_DECISION`, or `INFRASTRUCTURE_ERROR`.
+- `bash scripts/tests/agent-bootstrap-test.sh` runs isolated startup, registry, receipt, and
+  read-only fixtures without installing dependencies or starting product processes.

@@ -2,8 +2,8 @@
 
 | Policy | Current baseline enforcement | Project-specific extension |
 |---|---|---|
-| Scope and dirty state | WRITTEN RULE | Optional Git/preflight checks |
-| Evidence and status | OPERATOR DECISION | Optional receipt checks |
+| Scope and dirty state | AUTOMATED CHECK at agent startup | Optional project-specific checks |
+| Evidence and status | SESSION RECEIPT plus OPERATOR DECISION | External receipt authentication |
 | Destructive commands | WRITTEN RULE | Optional wrappers or permissions |
 | Sensitive data | WRITTEN RULE | Optional scanners and hooks |
 | Dependencies | WRITTEN RULE | Optional policy and supply-chain checks |
@@ -16,5 +16,6 @@
 | Test integrity | WRITTEN RULE | Test, coverage, mutation, and production-path checks |
 | Command safety | AUTOMATED CHECK when wrapper is used | Exclusive agent-runner or terminal-adapter integration |
 
-Other than command classification inside its wrapper, this map reports no automated or runtime
-enforcement in the skeleton itself.
+Startup and registered required checks are automated when the mandatory agent entrypoint and
+command wrapper are used. Exclusive runner/terminal integration remains necessary to prevent
+alternate execution paths.

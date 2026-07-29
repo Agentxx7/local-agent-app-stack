@@ -1,5 +1,9 @@
 # Guardrails
 
+`registry.toml` is the canonical machine-readable registry for executable, technology-neutral
+guardrails. Required entries are fail-closed and are executed by `scripts/verify.sh`; prose files
+remain explanatory contracts and may link to registered checks.
+
 These reusable policies define a general safety and quality baseline. Unless a project wires a
 real check or runtime control and records evidence, enforcement is `WRITTEN RULE` or
 `OPERATOR DECISION`, never automatic. The operator owns exceptions and final decisions.
