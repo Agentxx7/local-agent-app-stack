@@ -136,6 +136,9 @@ expect_code block-cmd-exe-k 30 bash "$gate" --check-only -- /tool/cmd.exe /k 'ec
 expect_code block-env-shell 30 bash "$gate" --check-only -- env ash -c 'printf bypass'
 expect_code block-env-split-string 30 bash "$gate" --check-only -- env -S 'ash -c printf-bypass'
 expect_code block-busybox-shell 30 bash "$gate" --check-only -- busybox ash -c 'printf bypass'
+expect_code block-env-wrapped-delete 30 bash "$gate" --check-only -- env rm -rf /
+expect_code block-command-wrapped-delete 30 bash "$gate" --check-only -- command rm -rf /
+expect_code block-pipeline-destructive-segment 30 bash "$gate" --check-only -- printf safe '|' rm -rf /
 expect_code block-python-command 30 bash "$gate" --check-only -- python -c 'print(1)'
 expect_code block-python3-command 30 bash "$gate" --check-only -- /usr/bin/python3 -c 'print(1)'
 expect_code block-perl-command 30 bash "$gate" --check-only -- perl -e 'print 1'
