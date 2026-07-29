@@ -45,4 +45,13 @@ The fixture run verified ALLOW, REVIEW, and BLOCK outcomes; protected Git mutati
 
 Known limitation: REVIEW execution requires a non-empty decision ID and reason and preserves the supplied argv array, but the standalone wrapper cannot authenticate the operator or independently compare argv with an external approval record. Exact argv scope therefore remains an operator/runner integration contract, not cryptographically or externally authenticated enforcement inside this repository.
 
-This evidence makes the frontier ready for operator review. It does not record `operator_accepted`, `LANDED`, `CLOSED`, or `PROMOTED`; those remain later operator-controlled actions.
+The verification evidence made the frontier ready for operator review. Operator acceptance is recorded below; `LANDED`, `CLOSED`, and `PROMOTED` remain later operator-controlled states.
+
+## Operator acceptance
+
+- `operator_accepted = true`
+- Decision ID: `ACCEPT_TEMPLATE_COMMAND_SAFETY_001`
+- Accepted implementation HEAD: `3b1dbfc9b29cae565ed1ddbf5751163dc406a048`
+- Accepted evidence: command-gate fixtures `140/140` PASS; template structure PASS; operating-model contract PASS; Bash syntax PASS; `git diff --check` PASS; synchronized local and remote work branch; clean worktree; truthful historical evidence; documented enforcement limitations accepted within this frontier.
+- Acceptance scope: Implementation and closure evidence on `work/TEMPLATE-COMMAND-SAFETY-001`.
+- Promotion status: Not yet promoted or landed. Promotion remains a separate operator-controlled action through the repository's canonical path.
