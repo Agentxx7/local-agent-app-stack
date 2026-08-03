@@ -1,3 +1,26 @@
+# START HERE — mandatory agent bootstrap
+
+## Current state on `main`
+
+The intended agent bootstrap script is `scripts/agent-start.sh`. It existed on the historical frontier `work/AGENT_BOOTSTRAP_AND_GUARDRAIL_REGISTRY_V1` but was never merged to `main`. Therefore the published template on `main` does **not** currently provide `scripts/agent-start.sh`, `scripts/verify.sh`, `guardrails/registry.toml`, or `scripts/registry-lib.sh`.
+
+Do not invent or rely on these missing scripts until an explicit frontier restores them.
+
+## Verified entrypoint for this branch
+
+The agent's first repository commands on this branch should be:
+
+```text
+bash scripts/verify-structure.sh --template
+bash scripts/verify-operating-model.sh
+```
+
+Do not analyze repository contents, change files, or run project commands until these checks pass.
+For an audit that must not mutate repository or product state, run the same commands and stop before any edit.
+
+The operator must complete project adoption before assigning implementation cards. See
+`docs/adopting-the-template.md` for the canonical first-project workflow.
+
 # Agent command policy
 
 ## Operatorstyrd evidensdriven agentutveckling
@@ -26,3 +49,11 @@ terminal interception. An adopting project must connect its agent runner or term
 the wrapper—and restrict alternate execution paths—for full technical enforcement. The standalone
 wrapper checks that REVIEW metadata is present but cannot authenticate who supplied it; agents must
 never invent or reuse an operator decision outside its recorded argv scope.
+
+# Adoption and workflow references
+
+- `docs/adopting-the-template.md` — canonical first-project workflow.
+- `docs/first-project-specification.md` — required first specification card content.
+- `docs/verification-and-guardrails.md` — verification commands and command-gate usage.
+- `workflow/operator-tdd-card-loop.md` — TDD card lifecycle.
+- `workflow/two-branch-model.md` — protected `main` and `work/<card-id>` branches.

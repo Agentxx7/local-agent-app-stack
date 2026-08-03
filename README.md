@@ -5,17 +5,60 @@ WARNING — THIS IS NOT VIBE CODING
 
 A reusable, technology-neutral application project skeleton.
 
+## START HERE
+
+This is a **template**, not a ready project. Do not start implementing product code immediately after fork or template use. Follow the adoption workflow first:
+
+1. Read [`docs/adopting-the-template.md`](docs/adopting-the-template.md).
+2. Fill in [`PROJECT.md`](PROJECT.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md) for the adopted project.
+3. Create the first specification card from [`cards/task-card-template.md`](cards/task-card-template.md).
+4. Create `work/<card-id>` from verified `main`.
+5. Define RED evidence or an equivalent verifiable proof before any implementation.
+
+Only then should an agent receive a bounded card.
+
+Human:
+
+1. Complete [`PROJECT.md`](PROJECT.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md) for an adopted project.
+2. Create `work/<card-id>` from verified `main`.
+3. Give the bounded card to the selected agent.
+
+Agent:
+
+1. Read [`AGENTS.md`](AGENTS.md).
+2. Run the verified entrypoint checks:
+   ```bash
+   bash scripts/verify-structure.sh --template
+   bash scripts/verify-operating-model.sh
+   ```
+3. Follow the guardrail chain in [`AGENTS.md`](AGENTS.md).
+
+README instructions alone are documentation, not enforcement. `scripts/verify-structure.sh`,
+`scripts/verify-operating-model.sh`, `scripts/command-gate.sh` integration, and an exclusive runner
+or terminal adapter provide the executable boundary. See [`AGENTS.md`](AGENTS.md) for the current
+entrypoint. Note that `scripts/agent-start.sh` and the guardrail registry existed on an earlier
+frontier but are not present on `main`; do not rely on them until an explicit frontier restores them.
+
 This template is designed for conversation-driven, operator-controlled, card-based development using test-driven development, evidence from the real affected path, and a protected two-branch workflow.
 
 It provides standard locations for frontend, backend, shared modules, configuration, persistence, tests, documentation, agents, skills, health checks, work cards, project guardrails, and quality evidence.
 
 The repository contains structure and templates only. It does not select a programming language, framework, database, AI model, runtime, deployment platform, or application architecture.
 
+## Template vs project
+
+- `template`: the complete published skeleton inventory, including optional directories such as `agents/`, `database/migrations/`, and `.github/workflows/`.
+- `project`: an adopted repository with a defined project specification recorded in [`PROJECT.md`](PROJECT.md).
+
+The transition from template to project is an explicit operator decision. It does **not** happen by deleting directories. Optional directories may only be removed after the adoption contract is satisfied and the operator decides they are no longer needed.
+
+This template does not provide automatic mode switching between `template` and `project`.
+
 ## Use as a GitHub template
 
 Mark this repository as a template in GitHub, then choose **Use this template** to create a new
-repository. Clone the new repository, complete `PROJECT.md`, record initial decisions in
-`ARCHITECTURE.md`, and replace or extend placeholders only when the real project requires it.
+repository. Clone the new repository, read [`docs/adopting-the-template.md`](docs/adopting-the-template.md), complete [`PROJECT.md`](PROJECT.md), record initial decisions in
+[`ARCHITECTURE.md`](ARCHITECTURE.md), and create the first frontier card before any implementation work.
 
 ## Repository overview
 
@@ -77,8 +120,7 @@ sequenceDiagram
   conventional TDD does not fit.
 
 Every code card begins with a defined failing proof where practical and ends with evidence from
-the real affected path. Tests guide implementation; evidence and the operator determine
-acceptance.
+the real affected path. Tests guide implementation; evidence and the operator determine acceptance.
 
 ```mermaid
 flowchart LR
@@ -180,3 +222,25 @@ BLOCK never executes through the wrapper. Decisions are logged locally without f
 The gate is automatic enforcement only for commands routed through it. It is not global terminal
 interception. Adopting projects must connect their agent runner or terminal adapter to the wrapper
 and restrict direct execution paths if they require complete technical enforcement.
+
+## Agent bootstrap and guardrail registry
+
+The intended agent bootstrap is `scripts/agent-start.sh`, backed by `guardrails/registry.toml` and
+`scripts/registry-lib.sh`. These components existed on the historical frontier
+`work/AGENT_BOOTSTRAP_AND_GUARDRAIL_REGISTRY_V1` but were never merged to `main`. The published
+template therefore does not currently provide automatic startup, a registry digest, or a session
+receipt in `.local/agent-session.env`.
+
+Until an explicit frontier restores them, use the verified entrypoint checks instead:
+
+```bash
+bash scripts/verify-structure.sh --template
+bash scripts/verify-operating-model.sh
+```
+
+`scripts/command-gate.sh` is available for command classification. Startup does not install
+dependencies or start product processes.
+
+## Adoption guide
+
+For the complete first-project workflow, see [`docs/adopting-the-template.md`](docs/adopting-the-template.md).
