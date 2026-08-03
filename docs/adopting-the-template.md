@@ -16,6 +16,11 @@ A human operator who has just forked or created a repository from the GitHub tem
 
 ## First-project workflow
 
+![From Template to First Delivery](images/from-template-to-first-delivery.png)
+
+The diagram above shows the full path from template or fork to closure. Each phase produces a
+verifiable artifact before the next phase begins. The details below expand each step.
+
 ### Phase 1 — Create the repository
 
 1. Use **Use this template** on GitHub or fork the repository according to your team's policy.

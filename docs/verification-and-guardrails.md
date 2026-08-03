@@ -2,6 +2,12 @@
 
 This guide explains how the template verifies structure, operating-model contracts, and command safety. It is written for the operator who adopts the template.
 
+![Guardrails and Control Plane](images/guardrails-and-control-plane.png)
+
+The control plane is designed to fail closed. Verification, command classification, session
+integrity, and closure checks block writing work until the project is defined, the frontier is
+valid, and the operator has reviewed the evidence.
+
 ## What the guardrails block
 
 The template's design blocks writing work until:

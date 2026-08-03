@@ -89,25 +89,11 @@ The operator chooses the agent; the advisor writes the bounded card; and the sel
 on that card's isolated work branch. The agent reports evidence but does not approve its own work.
 The report returns to the operator, and any next card is based on what the report actually proves.
 
-```mermaid
-sequenceDiagram
-    actor Operator
-    participant ChatGPT as ChatGPT / Advisor
-    participant Agent as Selected Agent
+![Human-in-the-Loop Operating Model](docs/images/human-in-the-loop-operating-model.png)
 
-    loop One bounded card at a time
-        Operator->>ChatGPT: Describes a problem, goal, or agent report
-        ChatGPT-->>Operator: Discusses options and asks relevant questions
-        Operator->>ChatGPT: Clarifies requirements and decides direction
-        ChatGPT-->>Operator: Produces a short copy-paste work card
-        Operator->>Agent: Selects Claude, Codex, Kimi, or another agent
-        Agent->>Agent: Performs the bounded assignment
-        Agent-->>Operator: Returns result, status, changes, and evidence
-        Operator->>ChatGPT: Sends the agent report back
-        ChatGPT-->>Operator: Separates proven work from missing work
-        Operator->>ChatGPT: Decides whether another card is needed
-    end
-```
+The human operator is the final authority. The advisor helps plan and clarify; the selected agent
+implements within a bounded frontier; and the auditor reviews. See `docs/human-in-the-loop.md` for
+the complete role contracts.
 
 ## Test-driven development
 
@@ -135,25 +121,11 @@ flowchart LR
 
 ## Test-driven card lifecycle
 
-```mermaid
-flowchart TD
-    M[Verified main] --> B[Create work/card-id]
-    B --> P[Define expected behaviour]
-    P --> R[RED: prove the test or check fails correctly]
-    R --> G[GREEN: minimal implementation]
-    G --> F[REFACTOR without behaviour change]
-    F --> V[VERIFY tests and real affected path]
-    V --> E[Agent report with evidence]
-    E --> O{Operator decision}
+![From Template to First Delivery](docs/images/from-template-to-first-delivery.png)
 
-    O -->|More work| P
-    O -->|Reject| X[Reject or close work branch]
-    O -->|Approve| C[Promote to main]
-
-    C --> VM[Verify main after merge]
-    VM --> H[Update health, lessons and evidence]
-    H --> N[Next card from verified main]
-```
+A project moves from template or fork to closure one frontier at a time. Each frontier defines scope,
+a work branch, RED evidence, implementation, verification, and operator review before promotion. See
+`docs/adopting-the-template.md` for the complete adoption lifecycle.
 
 ## Protected two-branch workflow
 

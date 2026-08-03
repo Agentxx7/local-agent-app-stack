@@ -7,6 +7,7 @@ Project-specific guides and references live here.
 - `docs/adopting-the-template.md` — canonical first-project workflow (fork/template → describe project → first spec card → frontier/branch → RED test → implement → verify → commit/push).
 - `docs/first-project-specification.md` — how to write the first specification card.
 - `docs/verification-and-guardrails.md` — verification commands, command gate, and what the guardrails block.
+- `docs/human-in-the-loop.md` — operator authority and agent role contracts.
 
 ## Related operating-model documents
 

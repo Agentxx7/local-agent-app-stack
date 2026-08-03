@@ -1,0 +1,45 @@
+# Task: Replace Mermaid diagrams with canonical PNG documentation diagrams
+
+- Card ID: TEMPLATE-DOCS-DIAGRAM-REPLACEMENT-001
+- Base commit: 2a0a782ed9ec4cbac853f9688aeeb1bab68b08d5
+- Work branch: `work/TEMPLATE-DOCS-DIAGRAM-REPLACEMENT-001`
+- Goal: Add four operator-approved English PNG diagrams as canonical documentation assets and replace older Mermaid diagrams only where they semantically overlap.
+- Context: The previous adoption-guide frontier is promoted and closed. Main is at `2a0a782`. Operator has supplied PNG files in `~/Downloads/github_readme_diagrams_en/`.
+- Allowed scope and paths:
+  - `docs/images/`
+  - `README.md`
+  - `docs/README.md`
+  - `docs/adopting-the-template.md`
+  - `docs/verification-and-guardrails.md`
+  - `ARCHITECTURE.md`
+  - `cards/TEMPLATE-DOCS-DIAGRAM-REPLACEMENT-001.md`
+- Prohibited changes:
+  - No script or guardrail logic changes.
+  - No product code changes.
+  - No new implementation frontiers.
+  - No image generation or editing.
+  - No force-push, rebase, or merge of the approved base commit.
+  - No deletion of Mermaid diagrams that describe different or additional information.
+- Allowed command categories: git, file, grep, bash scripts, python3 for link verification.
+- Prohibited commands: destructive commands, force-push, any write outside the allowed paths.
+- REVIEW commands expected: No.
+- Operator decision ID for approved REVIEW commands: N/A
+- Expected result: Four canonical PNG assets in `docs/images/`; updated docs with correct relative image references; overlapping Mermaid diagrams replaced; non-overlapping Mermaid diagrams retained.
+- Expected behaviour or claim: Documentation uses the canonical PNG diagrams where appropriate while preserving accessibility text and not duplicating files.
+- Failing proof (RED) or justified alternative: Before implementation, at least one expected canonical asset or markdown reference is missing.
+- Verification, including real affected path:
+  - `git diff --check`
+  - `bash scripts/verify-structure.sh --template`
+  - `bash scripts/verify-operating-model.sh`
+  - All internal markdown links valid.
+  - All local image references valid.
+  - PNG files identified by `file` and non-empty.
+  - No duplicate PNG copies in the repo.
+  - No references to removed diagrams.
+- Stop conditions:
+  - Any source PNG file missing or invalid.
+  - Any verification check fails.
+  - Scope expands beyond docs/assets.
+  - Uncommitted changes remain at report time.
+- Reporting requirements: Standard status report with asset mapping, checksums, replaced/retained Mermaid list, role contracts, verification results, git status, and diff stat.
+- Open questions: None.
