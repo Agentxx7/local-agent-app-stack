@@ -58,6 +58,14 @@ bash scripts/command-gate.sh --check-only -- <command> <args...>
 
 The gate is pre-execution enforcement only when the agent runner routes commands through it. It is not global terminal interception.
 
+Enforcement classification for this repository: **NOT_PRESENT**. No runner or terminal adapter in
+this repository invokes `scripts/command-gate.sh` automatically — `agents/`, `backend/`, and
+`modules/` contain only templates, not executable routing code. The gate is a working, tested
+classifier and wrapper, but nothing here technically forces execution through it. Do not describe
+this repository's command safety as `ENFORCED`, `PARTIALLY_ENFORCED`, or `DOCUMENTED_ONLY`; an
+adopting project changes this classification only by wiring its own runner or terminal adapter to
+call the wrapper exclusively and proving it with a test.
+
 ## What does not exist on `main`
 
 This template on `main` does **not** contain:

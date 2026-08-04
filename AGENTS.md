@@ -50,6 +50,11 @@ the wrapper—and restrict alternate execution paths—for full technical enforc
 wrapper checks that REVIEW metadata is present but cannot authenticate who supplied it; agents must
 never invent or reuse an operator decision outside its recorded argv scope.
 
+Enforcement classification on `main` today: **NOT_PRESENT**. This repository contains no runner or
+terminal adapter that technically forces commands through `scripts/command-gate.sh`; agents must
+invoke it themselves for every terminal command. Do not claim `ENFORCED`, `PARTIALLY_ENFORCED`, or
+`DOCUMENTED_ONLY` status for this repository's command safety.
+
 # Adoption and workflow references
 
 - `docs/adopting-the-template.md` — canonical first-project workflow.
