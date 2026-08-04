@@ -129,11 +129,25 @@ There is no `agent-start.sh`, `verify.sh`, `doctor`, or `preflight` script on `m
 
 The gate only enforces commands routed through it. It is not global terminal interception. An adopting project must connect its agent runner or terminal adapter to the wrapper for complete technical enforcement.
 
+## Connecting a command runner
+
+`guardrails/command-runner-contract.md` defines the canonical, technology-neutral request and result contract every adopted-project command runner must satisfy. The template does not implement a runner and does not select a language or runtime; connecting one is project work. Follow this order:
+
+1. **Select the project runtime first.** Choose the language, framework, and process-execution primitives the project will use before writing any runner code. The contract does not dictate this choice.
+2. **Implement exactly one project-owned runner.** Do not create a second, parallel path that can spawn processes outside it. Every agent-facing command surface funnels through this one runner.
+3. **Expose runner functionality instead of raw shell access to agents.** Agents should call the runner's interface, not an open shell, terminal, or arbitrary subprocess call.
+4. **Route classifications through `scripts/command-gate.sh` or a proven behaviour-equivalent implementation.** The runner may shell out to the existing classifier, reimplement equivalent logic, or call another classifier proven to produce the same `ALLOW`/`REVIEW`/`BLOCK` decisions; either way, every request the runner accepts must be classified before execution.
+5. **Connect operator approval to exact `scope_digest`.** A `REVIEW` request may execute only when an operator decision is recorded against the same digest the runner computed for that exact request; never accept an approval recorded against a different scope.
+6. **Add project-specific conformance tests.** Extend `scripts/tests/command-runner-contract-test.sh` or add a parallel suite that exercises the project's actual runner binary or endpoint against the request/result contract and required state transitions.
+7. **Use OS/container/harness restrictions to prevent bypass.** The runner alone is not enforcement; pair it with host-level controls that block raw shell execution outside the runner, per the host responsibilities in `guardrails/command-runner-contract.md`.
+8. **Do not mark enforcement as `ENFORCED` until all project-owned execution paths are proven to use the runner.** Until every agent-facing command surface is wired through it and verified, keep the project's own documentation honest about its actual enforcement state (`NOT_PRESENT`, or a specifically justified `PARTIALLY_ENFORCED`), consistent with `guardrails/enforcement-map.md`.
+
 ## Canonical locations
 
 - Full adoption workflow: `docs/adopting-the-template.md` (this file)
 - First project specification: `docs/first-project-specification.md`
 - Verification and guardrails: `docs/verification-and-guardrails.md`
+- Command runner contract: `guardrails/command-runner-contract.md`
 - Card templates: `cards/task-card-template.md` and `cards/status-report-template.md`
 - Workflow: `workflow/operator-tdd-card-loop.md` and `workflow/two-branch-model.md`
 - Agent entrypoint: `AGENTS.md`
