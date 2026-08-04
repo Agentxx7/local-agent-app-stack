@@ -1,0 +1,17 @@
+# CODEOWNERS
+#
+# This file documents expected review ownership. It becomes a technically required review gate
+# only when a corresponding GitHub ruleset or branch-protection setting (requiring review from
+# code owners) is enabled on this repository. In the absence of such a setting, this file is
+# documentation of intended ownership, not an enforced control.
+
+# Default owner for the entire repository.
+* @Agentxx7
+
+# Explicit ownership for guardrail, script, workflow, documentation, and GitHub-configuration
+# areas.
+/guardrails/ @Agentxx7
+/scripts/ @Agentxx7
+/workflow/ @Agentxx7
+/docs/ @Agentxx7
+/.github/ @Agentxx7
