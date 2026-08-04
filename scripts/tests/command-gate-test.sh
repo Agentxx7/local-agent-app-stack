@@ -370,5 +370,102 @@ fresh_mutant
 sed -i 's/^  BLOCK)$/  BLOCK-disabled)/' "$mutant"
 mutation_caught block-survives-approval candidate_code_is "$mutant" 30 --operator-approved MUTANT-DECISION --reason 'must not bypass' -- bash -c true
 
+expect_category() {
+  name=$1
+  expected_code=$2
+  expected_category=$3
+  shift 3
+  "$@" >"$test_root/stdout" 2>"$test_root/stderr"
+  actual=$?
+  actual_category=$(sed -n 's/^[A-Z]* category=//p' "$test_root/stderr" | tail -1)
+  if [[ "$actual" -eq "$expected_code" && "$actual_category" == "$expected_category" ]]; then
+    printf 'PASS %s\n' "$name"
+    passed=$((passed + 1))
+  else
+    printf 'FAIL %s expected_code=%s actual_code=%s expected_category=%s actual_category=%s\n' \
+      "$name" "$expected_code" "$actual" "$expected_category" "$actual_category"
+    failed=$((failed + 1))
+  fi
+}
+
+# --- COMMAND-GATE-HARDENING-001: conservative classification is preserved
+# for text passed to echo/printf; no executable-specific ALLOW shortcut is
+# introduced. Frequent REVIEW/BLOCK results are intentional and accepted;
+# none of these may become ALLOW as a result of this frontier. ---
+
+expect_category no-new-allow-echo-rm-word 20 unknown-or-ambiguous bash "$gate" --check-only -- echo rm
+expect_category no-new-allow-echo-rm-rf-root 30 protected-root-recursive-delete bash "$gate" --check-only -- echo rm -rf /
+expect_category no-new-allow-echo-git-reset-hard 30 git-reset-hard bash "$gate" --check-only -- echo git reset --hard
+expect_category no-new-allow-echo-sudo-rm 30 protected-root-recursive-delete bash "$gate" --check-only -- echo sudo rm -rf /
+expect_category no-new-allow-printf-git-reset-hard 30 git-reset-hard bash "$gate" --check-only -- printf '%s\n' git reset --hard
+expect_category no-new-allow-echo-drop-database 30 destructive-sql bash "$gate" --check-only -- echo 'DROP DATABASE example'
+
+expect_category review-grep-searched-sudo-text 20 unknown-or-ambiguous bash "$gate" --check-only -- grep sudo file.txt
+expect_category review-cat-inert-rm-argument 20 unknown-or-ambiguous bash "$gate" --check-only -- cat rm
+
+expect_code review-echo-with-command-substitution 20 bash "$gate" --check-only -- echo '$(rm -rf /)'
+expect_code block-printf-pipeline-still-blocked 30 bash "$gate" --check-only -- printf safe '|' rm -rf /
+
+expect_code block-real-rm-still-blocked 30 bash "$gate" --check-only -- rm -rf /
+expect_category review-real-sudo-still-privileged 20 privileged-or-process-control bash "$gate" --check-only -- sudo ls
+
+# --- Safe defaults: unknown/ambiguous/compound remain REVIEW (risk 1) ---
+expect_code review-unrecognized-compound-tokens 20 bash "$gate" --check-only -- foo '&&' bar
+expect_category review-git-unrecognized-subcommand 20 git-other bash "$gate" --check-only -- git bisect start
+expect_code review-malformed-ambiguous-quoting 20 bash "$gate" --check-only -- weirdtool 'a; b | c'
+
+# --- Enforcement truthfulness: no repository-owned runner/adapter forces routing (risk 3) ---
+runner_matches=$(grep -rl "command-gate.sh" --include='*.sh' --include='*.py' --include='*.js' --include='*.ts' "$root" 2>/dev/null \
+  | grep -v -F "$root/scripts/command-gate.sh" \
+  | grep -v -F "$root/scripts/tests/command-gate-test.sh" \
+  | grep -v -F "$root/scripts/verify-structure.sh")
+if [[ -z "$runner_matches" ]]; then
+  printf 'PASS enforcement-classification-not-present (no automated runner/adapter invokes the gate)\n'
+  passed=$((passed + 1))
+else
+  printf 'FAIL enforcement classification stale: found runner/adapter code invoking the gate:\n%s\n' "$runner_matches"
+  failed=$((failed + 1))
+fi
+
+# --- Evidence logging: decision record supports reconstruction without raw secrets (risk 4) ---
+digest_secret='TEST_DIGEST_SECRET_9c31'
+bash "$gate" --operator-approved TEST-DECISION-DIGEST --reason 'digest evidence test' -- printf '%s\n' "$digest_secret" >"$test_root/digest-stdout" 2>"$test_root/digest-stderr"
+log_line=$(grep 'classification=ALLOW' "$COMMAND_GATE_LOG_DIR/command-gate.log" | grep 'decision=TEST-DECISION-DIGEST' | tail -1)
+if [[ "$log_line" == *"argv_digest="*"scope_digest="*"redaction="* ]]; then
+  printf 'PASS decision record includes argv_digest, scope_digest, and redaction fields\n'
+  passed=$((passed + 1))
+else
+  printf 'FAIL decision record missing evidence fields: %s\n' "$log_line"
+  failed=$((failed + 1))
+fi
+if [[ "$log_line" != *"$digest_secret"* ]]; then
+  printf 'PASS decision record digest does not contain raw secret\n'
+  passed=$((passed + 1))
+else
+  printf 'FAIL decision record leaked raw secret\n'
+  failed=$((failed + 1))
+fi
+
+result_line=$(grep 'event=result' "$COMMAND_GATE_LOG_DIR/command-gate.log" | grep 'decision=TEST-DECISION-DIGEST' | tail -1)
+if [[ "$result_line" == *"exit_code=0"* ]]; then
+  printf 'PASS execution result recorded for approved REVIEW command\n'
+  passed=$((passed + 1))
+else
+  printf 'FAIL execution result not recorded: %s\n' "$result_line"
+  failed=$((failed + 1))
+fi
+
+bash "$gate" --check-only -- printf '%s\n' fingerprint-check >/dev/null 2>&1
+digest1=$(grep 'command=printf' "$COMMAND_GATE_LOG_DIR/command-gate.log" | tail -1 | grep -o 'argv_digest=[a-f0-9]*')
+bash "$gate" --check-only -- printf '%s\n' fingerprint-check >/dev/null 2>&1
+digest2=$(grep 'command=printf' "$COMMAND_GATE_LOG_DIR/command-gate.log" | tail -1 | grep -o 'argv_digest=[a-f0-9]*')
+if [[ -n "$digest1" && "$digest1" == "$digest2" ]]; then
+  printf 'PASS argv digest is deterministic for identical argv\n'
+  passed=$((passed + 1))
+else
+  printf 'FAIL argv digest not deterministic: %s vs %s\n' "$digest1" "$digest2"
+  failed=$((failed + 1))
+fi
+
 printf 'RESULT passed=%s failed=%s\n' "$passed" "$failed"
 [[ "$failed" -eq 0 ]]

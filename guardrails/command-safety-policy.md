@@ -13,6 +13,13 @@
   decision ID, reason, exact command scope, and operator record.
 - Enforcement type: AUTOMATED CHECK when the wrapper is used. Direct terminal access is not
   intercepted by this template.
+- Enforcement classification: NOT_PRESENT for repository-owned runner or terminal-adapter
+  integration. No file in this repository invokes `scripts/command-gate.sh` automatically; the
+  script is a standalone classifier that only takes effect when something explicitly calls it.
+  `scripts/tests/command-gate-test.sh` proves this by asserting no other repository script
+  references the wrapper. This is not ENFORCED, PARTIALLY_ENFORCED, or DOCUMENTED_ONLY: the
+  classifier itself works and is tested, but nothing in this repository is technically forced
+  through it, so no claim of automatic or global enforcement is made.
 - Operator override: REVIEW may execute only when the invocation includes a decision ID and reason;
   the command after `--` is its exact execution scope and is passed unchanged. BLOCK has no
   ordinary override; stop and report instead.

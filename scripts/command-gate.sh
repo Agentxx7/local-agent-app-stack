@@ -480,10 +480,22 @@ classify "${command_argv[@]}"
 safe_decision=${decision_id//[^A-Za-z0-9._:-]/_}
 safe_command=${command_argv[0]##*/}
 safe_command=${safe_command//[^A-Za-z0-9._+-]/_}
+
+# Redacted, deterministic evidence: a digest of the normalized argv supports
+# later comparison against the exact scope an operator approved, without ever
+# persisting raw arguments, reasons, or secrets in the log.
+argv_digest=unavailable
+if command -v sha256sum >/dev/null 2>&1; then
+  argv_digest=$(printf '%s\0' "${command_argv[@]}" | sha256sum | cut -d' ' -f1)
+fi
+scope_digest=-
+[[ -n "$decision_id" ]] && scope_digest=$argv_digest
+
 mkdir -p -- "$log_dir" || { printf 'FAIL cannot create command-gate log directory\n' >&2; exit "$EXIT_USAGE"; }
-printf '%s classification=%s category=%s mode=%s command=%s argc=%s decision=%s\n' \
+printf '%s classification=%s category=%s mode=%s command=%s argc=%s decision=%s argv_digest=%s scope_digest=%s redaction=%s\n' \
   "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$CLASSIFICATION" "$CATEGORY" "$mode" \
-  "$safe_command" "${#command_argv[@]}" "${safe_decision:--}" >> "$log_file"
+  "$safe_command" "${#command_argv[@]}" "${safe_decision:--}" "$argv_digest" "$scope_digest" \
+  "argv-and-reason-omitted" >> "$log_file"
 
 printf '%s category=%s\n' "$CLASSIFICATION" "$CATEGORY" >&2
 
@@ -502,3 +514,7 @@ case "$CLASSIFICATION" in
 esac
 
 "${command_argv[@]}"
+exec_status=$?
+printf '%s event=result argv_digest=%s decision=%s exit_code=%s\n' \
+  "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$argv_digest" "${safe_decision:--}" "$exec_status" >> "$log_file"
+exit "$exec_status"
