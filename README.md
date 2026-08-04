@@ -216,3 +216,10 @@ dependencies or start product processes.
 ## Adoption guide
 
 For the complete first-project workflow, see [`docs/adopting-the-template.md`](docs/adopting-the-template.md).
+
+## License
+
+This repository is licensed under the [Apache License 2.0](LICENSE). You may use, modify, and
+distribute copies of this repository subject to the terms of that license. The [`LICENSE`](LICENSE)
+file at the root of this repository is the authoritative source of the license terms; this section
+is a summary only.

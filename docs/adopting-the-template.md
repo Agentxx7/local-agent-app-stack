@@ -1,6 +1,8 @@
 # Adopting the template
 
-This is the canonical guide for turning `Agentxx7/local-agent-app-stack` into a defined project. Read it before writing product code, before deleting optional directories, and before creating the first work branch.
+This is the canonical guide for turning a repository created from this template into a defined
+project. Read it before writing product code, before deleting optional directories, and before
+creating the first work branch.
 
 ## What this template is
 
@@ -12,7 +14,19 @@ A starting point for immediate implementation. The template blocks writing work 
 
 ## Audience
 
-A human operator who has just forked or created a repository from the GitHub template. No prior knowledge of Nightstalker, Lilith, AI desktops, or voice interfaces is assumed.
+A human operator who has just used **Use this template** on GitHub, cloned, or forked this
+repository to start a new adopted project. No prior knowledge of any specific product, application
+domain, or prior use of this template is assumed.
+
+## Adopted repository vs. canonical upstream
+
+Using **Use this template**, cloning, or forking creates a separate, independently owned
+repository. Adopters modify that generated repository, clone, or fork — not the canonical upstream
+template repository. Adopters do not receive write access to the canonical upstream repository by
+adopting the template. Changes an adopter wants reflected upstream require either an accepted pull
+request against the upstream repository or explicit collaborator permission granted by the upstream
+maintainers. Nothing in this guide implies shared write access between an adopted repository and
+its upstream source.
 
 ## First-project workflow
 
