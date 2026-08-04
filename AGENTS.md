@@ -60,5 +60,8 @@ invoke it themselves for every terminal command. Do not claim `ENFORCED`, `PARTI
 - `docs/adopting-the-template.md` — canonical first-project workflow.
 - `docs/first-project-specification.md` — required first specification card content.
 - `docs/verification-and-guardrails.md` — verification commands and command-gate usage.
+- `guardrails/command-runner-contract.md` — canonical command-runner request/result contract; see
+  "Connecting a command runner" in `docs/adopting-the-template.md` for how an adopted project wires
+  a runner to it.
 - `workflow/operator-tdd-card-loop.md` — TDD card lifecycle.
 - `workflow/two-branch-model.md` — protected `main` and `work/<card-id>` branches.
