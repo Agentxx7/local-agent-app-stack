@@ -8,6 +8,13 @@ deployment, and constraints here.
 
 ![Canonical ID Flow](docs/images/canonical-id-flow.png)
 
+This diagram is an identity-and-data-flow reference: it shows how one identifier stays traceable
+from its definition through storage, domain logic, runtime, and UI. It is not a complete picture of
+stateful architecture — it predates the state-and-identity policy below and does not show state,
+transitions, or persistence. Treat it as a specialized identity-flow diagram, not as evidence that
+identity alone describes a stateful capability. See "Canonical state and transitions" for the
+authoritative relationship.
+
 Every adopted project should define one canonical identity and data-flow chain. The diagram above
 shows the reference direction:
 
@@ -41,6 +48,24 @@ Manifest / config → Registry → Storage → Domain → Runtime / backend → 
 - Identity and state are different concepts, and interfaces do not own shadow state. See
   `guardrails/state-and-identity-policy.md` for the canonical stateless/stateful distinction,
   identity/state/persistence relationship, and per-capability ownership rule.
+
+## Canonical state and transitions
+
+Canonical identity alone does not describe a stateful capability. For any capability that has
+state, this is the authoritative relationship — not the identity-only diagram above:
+
+```mermaid
+flowchart LR
+    ID["Identity<br/>(where required)"] --> CS[Canonical State]
+    CS -->|explicit transition| NS[New Canonical State]
+    NS -.->|persistence, where durability is required| P[(Durable Store)]
+```
+
+Stateless capabilities skip this chain entirely: `input → canonical operation → result`, with no
+identity or persistence added for symmetry. The full contract — stateless/stateful classification,
+one canonical owner per stateful capability, transition rules, and the persistence boundary — is
+defined once, in `guardrails/state-and-identity-policy.md`. This section only points to it; it does
+not restate it.
 
 ## Project-specific architecture
 
