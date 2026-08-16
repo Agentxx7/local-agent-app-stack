@@ -162,6 +162,7 @@ The gate only enforces commands routed through it. It is not global terminal int
 - First project specification: `docs/first-project-specification.md`
 - Verification and guardrails: `docs/verification-and-guardrails.md`
 - Command runner contract: `guardrails/command-runner-contract.md`
+- State and identity policy: `guardrails/state-and-identity-policy.md`
 - Card templates: `cards/task-card-template.md` and `cards/status-report-template.md`
 - Workflow: `workflow/operator-tdd-card-loop.md` and `workflow/two-branch-model.md`
 - Agent entrypoint: `AGENTS.md`

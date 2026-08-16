@@ -47,7 +47,9 @@ Describe the happy-path data flow for the first usable outcome.
 
 ## Source of truth
 
-Name the authoritative store for each kind of state.
+Name the authoritative store for each kind of state. For stateful capabilities, also record the
+canonical identity model, state vocabulary, transition vocabulary, and owner, per
+`guardrails/state-and-identity-policy.md`.
 
 ## Security and data handling
 

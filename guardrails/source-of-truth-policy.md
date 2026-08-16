@@ -8,3 +8,5 @@
 - Enforcement type: WRITTEN RULE.
 - Operator override: Multiple writers require an explicit consistency design and decision.
 - Remaining limitations: Static documentation cannot prove runtime writer exclusivity.
+- Related: `guardrails/state-and-identity-policy.md` defines the identity/state/transition
+  distinctions and canonical-ownership rule this policy assumes for stateful state domains.

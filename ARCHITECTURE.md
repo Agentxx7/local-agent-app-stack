@@ -38,6 +38,9 @@ Manifest / config → Registry → Storage → Domain → Runtime / backend → 
   production. When a new flow replaces an old one, remove the old path after the new path is verified.
 - The template does not prescribe a concrete registry, database, or runtime. The adopting project
   selects tools that satisfy the chain above.
+- Identity and state are different concepts, and interfaces do not own shadow state. See
+  `guardrails/state-and-identity-policy.md` for the canonical stateless/stateful distinction,
+  identity/state/persistence relationship, and per-capability ownership rule.
 
 ## Project-specific architecture
 

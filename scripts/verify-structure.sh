@@ -92,6 +92,7 @@ required_files=(
   "guardrails/scope-and-change-control.md"
   "guardrails/secrets-and-sensitive-data.md"
   "guardrails/source-of-truth-policy.md"
+  "guardrails/state-and-identity-policy.md"
   "guardrails/testing-and-production-link.md"
   "guardrails/test-integrity-policy.md"
   "health/README.md"

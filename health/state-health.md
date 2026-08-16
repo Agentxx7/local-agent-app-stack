@@ -1,6 +1,7 @@
 # State health
 
-- Scope: Persistent, cached, temporary, and in-memory state domains.
+- Scope: Persistent, cached, temporary, and in-memory state domains, classified per
+  `guardrails/state-and-identity-policy.md`.
 - Current state: NOT CHECKED
 - Evidence: Not yet collected.
 - Known failures: None recorded.
