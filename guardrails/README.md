@@ -4,9 +4,10 @@ These reusable policies define a general safety and quality baseline. Unless a p
 real check or runtime control and records evidence, enforcement is `WRITTEN RULE` or
 `OPERATOR DECISION`, never automatic. The operator owns exceptions and final decisions.
 
-The baseline includes branch and promotion boundaries plus test-integrity rules. Projects must
-configure their own host protection, test tooling, and runtime controls; these documents do not
-claim that such enforcement exists.
+The baseline includes branch and promotion boundaries, test-integrity rules, source-of-truth
+ownership, and the identity/state/transition distinctions in `state-and-identity-policy.md`.
+Projects must configure their own host protection, test tooling, and runtime controls; these
+documents do not claim that such enforcement exists.
 
 `command-safety-policy.md` is the exception: its ALLOW/REVIEW/BLOCK decision is an automated
 pre-execution check when `scripts/command-gate.sh` is used. It does not intercept other terminal

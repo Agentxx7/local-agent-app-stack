@@ -15,7 +15,9 @@ them `NOT APPLICABLE` with a reason. These are review prompts, not automated enf
 - Production-path evidence: Tests or manual checks reach the path they claim to verify.
 - Dependencies: Additions have purpose, owner, version, and verification.
 - Secrets: No credentials, private paths, or operator data entered version control.
-- State: Sources of truth, writers, migration, and cleanup are accounted for.
+- State: Sources of truth, writers, migration, and cleanup are accounted for, including the
+  stateless/stateful classification and canonical ownership in `guardrails/state-and-identity-policy.md`
+  where a capability is stateful.
 - Process cleanup: Created processes have identity, ownership, timeout, and cleanup evidence.
 - Command safety: Agent-controlled commands used the gate; REVIEW decisions and BLOCK/bypass
   attempts are reported. Record any execution path not technically connected to the wrapper.

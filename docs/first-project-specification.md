@@ -50,7 +50,7 @@ Describe the happy-path data flow for the first usable outcome. Use concrete IDs
 
 ### 8. Source of truth
 
-Name the authoritative store for each kind of state. Avoid multiple sources of truth for the same fact.
+Name the authoritative store for each kind of state. Avoid multiple sources of truth for the same fact. For any capability classified as stateful, also record its canonical identity model, state vocabulary, transition vocabulary, and owner per `guardrails/state-and-identity-policy.md`.
 
 ### 9. Security and data handling
 

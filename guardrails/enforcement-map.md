@@ -9,6 +9,7 @@
 | Dependencies | WRITTEN RULE | Optional policy and supply-chain checks |
 | Process lifecycle | WRITTEN RULE | Runtime enforcement and lifecycle tests |
 | Source of truth | WRITTEN RULE | Architecture/runtime consistency checks |
+| State and identity | WRITTEN RULE | Optional architecture-fitness or runtime state checks |
 | Testing link | WRITTEN RULE | Integration and production-path assertions |
 | Rejected material | OPERATOR DECISION | Repository/runtime/state absence checks |
 | Incident follow-up | OPERATOR DECISION | Issue or ledger automation if selected |
